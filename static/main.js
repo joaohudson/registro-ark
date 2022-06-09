@@ -33,14 +33,33 @@ async function loadData(){
 
     itemsDiv.innerHTML = '';
 
-    const ul = document.createElement("ul");
+    const table = document.createElement('table');
+
+    const fields = [
+      { name: "Name", label: "Nome" },
+      { name: "Action", label: "Ação" },
+      { name: "Owner", label: "Dono" },
+    ];
+
+    const trTitle = document.createElement("tr");
+    for(const f of fields){
+        const th = document.createElement('th');
+        th.innerText = f.label;
+        trTitle.appendChild(th);
+    }
+    table.appendChild(trTitle);
+    
     for(const obj of data){
-        const li = document.createElement("li");
-        li.innerText = "Nome: " + obj.Name + " | Ação: " + obj.Action + " | Dono: " + obj.Owner;
-        ul.appendChild(li);
+        const tr = document.createElement('tr');
+        for(const f of fields){
+            const td = document.createElement('td');
+            td.innerText = obj[f.name];
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
     }
 
-    itemsDiv.appendChild(ul);
+    itemsDiv.appendChild(table);
 }
 
 async function main(){
