@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            html{
+                height: 100%;
+            }
+            body{
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-image: url('/images/ark-survival-evolved1-18.webp');
+            }
+            .centered{
+                align-items: center;
+                text-align: center;
+            }
+            #itemsDiv{
+                margin-left: 30%;
+                margin-top: 30px;
+                font-weight: bold;
+                text-shadow: 1.2px 0 0 #aaa;
+            }
+            select, button{
+                background-color: black;
+                color: darkturquoise;
+            }
+        </style>
+        <title>Registro Ark</title>
+        <link href="/images/icon.png" rel="icon">
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <div class="centered">
+            <h1>Dinos</h1>
+            <select id="ownerField"></select>
+            <button id="ownerButton">Run</button>
+        </div>
+        <div id="itemsDiv"></div>
+        <script src="main.js" type="text/javascript"></script>
+    </body>
+</html>
