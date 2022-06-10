@@ -67,14 +67,15 @@ func dinos(response http.ResponseWriter, request *http.Request) {
 	}
 
 	owner := request.URL.Query().Get("owner")
-	if owner != "" {
-		for i := range data {
-			if data[i].Owner == owner {
-				result = append(result, data[i])
-			}
+	name := request.URL.Query().Get("name")
+
+	for i := range data {
+		ownerMatch := owner == "" || owner == data[i].Owner
+		nameMatch := name == "" || name == data[i].Name
+
+		if ownerMatch && nameMatch {
+			result = append(result, data[i])
 		}
-	} else {
-		result = data
 	}
 
 	sendJson(response, result)
