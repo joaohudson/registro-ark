@@ -1,9 +1,10 @@
 const itemsDiv = document.getElementById('itemsDiv');
 const ownerField = document.getElementById('ownerField');
+const nameField = document.getElementById('nameField');
 const ownerButton = document.getElementById('ownerButton');
 
-async function fetchDinos(owner){
-    const response = await fetch('/dino?owner=' + owner);
+async function fetchDinos(owner, name){
+    const response = await fetch('/dino?owner=' + owner + '&name=' + name);
 
     if(!response.ok){
         throw await response.text();
@@ -25,7 +26,7 @@ async function fetchOwners(){
 async function loadData(){
     let data;
     try{
-        data = await fetchDinos(ownerField.value);
+        data = await fetchDinos(ownerField.value, nameField.value);
     }catch(e){
         alert(e);
         return;
@@ -62,7 +63,7 @@ async function loadData(){
     itemsDiv.appendChild(table);
 }
 
-async function main(){
+async function createOwnersDropdown(){
     let owners;
     try{
         owners = await fetchOwners();
@@ -83,6 +84,34 @@ async function main(){
         opt.value = value;
         ownerField.appendChild(opt);
     }
+}
+
+async function createDinoNamesDropdown(){
+    let names;
+    try{
+        names = (await fetchDinos('', '')).map(dino => dino.Name);
+    }
+    catch(e){
+        alert(e);
+        return;
+    }
+
+    const optionsKeys =  ['Todos', ...names];
+    const optionsValues = ['', ...names];
+
+    for(let i = 0; i < optionsKeys.length; i++){
+        const key = optionsKeys[i];
+        const value = optionsValues[i];
+        const opt = document.createElement('option');
+        opt.innerText = key;
+        opt.value = value;
+        nameField.appendChild(opt);
+    }
+}
+
+async function main(){
+    await createOwnersDropdown();
+    await createDinoNamesDropdown();
 }
 
 main();
