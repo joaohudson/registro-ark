@@ -13,6 +13,16 @@ async function fetchDinos(owner, name){
     return await response.json()
 }
 
+async function fetchDinoNames(){
+    const response = await fetch('/dino/name');
+
+    if(!response.ok){
+        throw await response.text();
+    }
+
+    return await response.json()
+}
+
 async function fetchOwners(){
     const response = await fetch('/owner');
 
@@ -89,7 +99,7 @@ async function createOwnersDropdown(){
 async function createDinoNamesDropdown(){
     let names;
     try{
-        names = (await fetchDinos('', '')).map(dino => dino.Name);
+        names = await fetchDinoNames();
     }
     catch(e){
         alert(e);

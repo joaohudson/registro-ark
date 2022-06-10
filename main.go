@@ -19,6 +19,7 @@ func main() {
 
 	http.HandleFunc("/dino", dinos)
 	http.HandleFunc("/owner", owners)
+	http.HandleFunc("/dino/name", dinoNames)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
@@ -29,6 +30,29 @@ func main() {
 func home(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusNotFound)
 	response.Write([]byte("Nenhum serviço aqui!"))
+}
+
+func dinoNames(response http.ResponseWriter, request *http.Request) {
+	result := []string{}
+
+	data, err := readData("data.json")
+	if err != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte("Erro interno do servidor, por favor tente mais tarde."))
+		fmt.Println("Erro ao ler arquivo json: ", err)
+		return
+	}
+
+	set := make(map[string]bool)
+	for i := range data {
+		set[data[i].Name] = true
+	}
+
+	for k := range set {
+		result = append(result, k)
+	}
+
+	sendJson(response, result)
 }
 
 func owners(response http.ResponseWriter, request *http.Request) {
