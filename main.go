@@ -13,6 +13,8 @@ type Dino struct {
 	Action string
 }
 
+const DefaultInternalServerErrorMessage = "Erro interno do servidor, por favor tente mais tarde."
+
 func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
@@ -27,18 +29,13 @@ func main() {
 	}
 }
 
-func home(response http.ResponseWriter, request *http.Request) {
-	response.WriteHeader(http.StatusNotFound)
-	response.Write([]byte("Nenhum serviço aqui!"))
-}
-
 func dinoNames(response http.ResponseWriter, request *http.Request) {
 	result := []string{}
 
 	data, err := readData("data.json")
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Erro interno do servidor, por favor tente mais tarde."))
+		response.Write([]byte(DefaultInternalServerErrorMessage))
 		fmt.Println("Erro ao ler arquivo json: ", err)
 		return
 	}
@@ -61,7 +58,7 @@ func owners(response http.ResponseWriter, request *http.Request) {
 	data, err := readData("data.json")
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Erro interno do servidor, por favor tente mais tarde."))
+		response.Write([]byte(DefaultInternalServerErrorMessage))
 		fmt.Println("Erro ao ler arquivo json: ", err)
 		return
 	}
@@ -86,7 +83,7 @@ func dinos(response http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		fmt.Println("Erro ao ler arquivo json: ", err)
 		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Erro interno do servidor, por favor tente mais tarde."))
+		response.Write([]byte(DefaultInternalServerErrorMessage))
 		return
 	}
 
@@ -113,7 +110,7 @@ func sendJson(response http.ResponseWriter, data interface{}) {
 	if err != nil {
 		fmt.Println("Erro no parse json: ", err)
 		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte("Ocorreu um erro interno, tente novamente mais tarde."))
+		response.Write([]byte(DefaultInternalServerErrorMessage))
 		return
 	}
 }
