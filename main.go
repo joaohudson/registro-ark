@@ -23,7 +23,7 @@ func main() {
 	http.HandleFunc("/owner", owners)
 	http.HandleFunc("/dino/name", dinoNames)
 
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		fmt.Println("Erro ao iniciar servidor: ", err)
 	}
