@@ -65,10 +65,9 @@ async function loadData(){
     itemsDiv.appendChild(table);
 }
 
-function createFoodDropdown(categories){
-    const {foods} = categories;
-    const optionsKeys =  ['Todos', ...foods];
-    const optionsValues = ['', ...foods];
+function pupulateDropdown(data, dropdown){
+    const optionsKeys =  ['Todos', ...data];
+    const optionsValues = ['', ...data];
 
     for(let i = 0; i < optionsKeys.length; i++){
         const key = optionsKeys[i];
@@ -76,37 +75,7 @@ function createFoodDropdown(categories){
         const opt = document.createElement('option');
         opt.innerText = key;
         opt.value = value;
-        foodField.appendChild(opt);
-    }
-}
-
-function createLocomotionDropdown(categories){
-    const {locomotions} = categories;
-    const optionsKeys =  ['Todos', ...locomotions];
-    const optionsValues = ['', ...locomotions];
-
-    for(let i = 0; i < optionsKeys.length; i++){
-        const key = optionsKeys[i];
-        const value = optionsValues[i];
-        const opt = document.createElement('option');
-        opt.innerText = key;
-        opt.value = value;
-        locomotionField.appendChild(opt);
-    }
-}
-
-function createRegionDropdown(categories){
-    const {regions} = categories;
-    const optionsKeys =  ['Todos', ...regions];
-    const optionsValues = ['', ...regions];
-
-    for(let i = 0; i < optionsKeys.length; i++){
-        const key = optionsKeys[i];
-        const value = optionsValues[i];
-        const opt = document.createElement('option');
-        opt.innerText = key;
-        opt.value = value;
-        regionField.appendChild(opt);
+        dropdown.appendChild(opt);
     }
 }
 
@@ -122,9 +91,9 @@ async function main(){
         return;
     }
     
-    createRegionDropdown(categories);
-    createLocomotionDropdown(categories);
-    createFoodDropdown(categories);
+    pupulateDropdown(categories.regions, regionField);
+    pupulateDropdown(categories.locomotions, locomotionField);
+    pupulateDropdown(categories.foods, foodField);
 }
 
 main();
