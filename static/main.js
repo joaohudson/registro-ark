@@ -54,6 +54,9 @@ async function loadData(){
     
     for(const obj of data){
         const tr = document.createElement('tr');
+        tr.onclick = () => {
+            location.href = '/dino?name=' + obj[categoryNames[0].name];
+        };
         for(const f of categoryNames){
             const td = document.createElement('td');
             td.innerText = obj[f.name];

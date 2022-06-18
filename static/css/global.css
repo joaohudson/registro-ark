@@ -1,0 +1,17 @@
+html{
+    height: 100%;
+}
+body{
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('/images/ark-survival-evolved1-18.webp');
+}
+h1{
+    font-size: 48px;
+    text-shadow: 2px 1.5px 0 #be823e;
+}
+.centered{
+    align-items: center;
+    text-align: center;
+}
