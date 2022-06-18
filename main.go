@@ -17,7 +17,7 @@ type Dino struct {
 	Utility    string `json:"utility"`
 }
 
-type DinoCategpryResponse struct {
+type DinoCategoryResponse struct {
 	Regions     []string `json:"regions"`
 	Locomotions []string `json:"locomotions"`
 	Foods       []string `json:"foods"`
@@ -39,7 +39,7 @@ func main() {
 }
 
 func dinoCategories(response http.ResponseWriter, request *http.Request) {
-	result := DinoCategpryResponse{
+	result := DinoCategoryResponse{
 		Regions:     []string{},
 		Locomotions: []string{},
 		Foods:       []string{},
