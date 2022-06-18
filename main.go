@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 type Dino struct {
@@ -29,8 +30,9 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	http.Handle("/", fs)
 
-	http.HandleFunc("/api/dino", dinos)
-	http.HandleFunc("/api/dino/category", dinoCategories)
+	http.HandleFunc("/api/dino", dino)
+	http.HandleFunc("/api/dinos", dinos)
+	http.HandleFunc("/api/dino/categories", dinoCategories)
 
 	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
@@ -75,6 +77,33 @@ func dinoCategories(response http.ResponseWriter, request *http.Request) {
 	}
 
 	sendJson(response, result)
+}
+
+func dino(response http.ResponseWriter, request *http.Request) {
+
+	data, err := readData("data.json")
+	if err != nil {
+		fmt.Println("Erro ao ler arquivo json: ", err)
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(DefaultInternalServerErrorMessage))
+		return
+	}
+
+	id, err := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
+
+	if err != nil {
+		response.WriteHeader(http.StatusNotFound)
+		response.Write([]byte("Dino não encontrado!"))
+		return
+	}
+
+	for i := range data {
+
+		if id == data[i].Id {
+			sendJson(response, data[i])
+			break
+		}
+	}
 }
 
 func dinos(response http.ResponseWriter, request *http.Request) {

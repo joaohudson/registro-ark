@@ -6,8 +6,8 @@ const foodP = document.getElementById('foodP');
 const utilityP = document.getElementById('utilityP');
 const trainingP = document.getElementById('trainingP');
 
-async function getDino(name){
-    const response = await fetch('/api/dino?name=' + name);
+async function getDino(id){
+    const response = await fetch('/api/dino?id=' + id);
 
     if(!response.ok){
         throw await response.text();
@@ -18,16 +18,16 @@ async function getDino(name){
 
 async function main(){
     const params = new URLSearchParams(location.search);
-    if(!params.has('name')){
+    if(!params.has('id')){
         alert('Dino não encontrado!');
         return;
     }
-    const dinoName = params.get('name');
+    const dinoId = params.get('id');
 
     
     let dino;
     try{
-        [dino] = await getDino(dinoName)
+        dino = await getDino(dinoId)
     }
     catch(e){
         alert(e);

@@ -5,7 +5,7 @@ const foodField = document.getElementById('foodField');
 const filterButton = document.getElementById('filterButton');
 
 async function fetchDinos(region = '', locomotion = '', food = '', name = ''){
-    const response = await fetch('/api/dino?region=' + region + '&locomotion=' + locomotion + '&food=' + food + '&name=' + name);
+    const response = await fetch('/api/dinos?region=' + region + '&locomotion=' + locomotion + '&food=' + food + '&name=' + name);
 
     if(!response.ok){
         throw await response.text();
@@ -15,7 +15,7 @@ async function fetchDinos(region = '', locomotion = '', food = '', name = ''){
 }
 
 async function fetchCategories(){
-    const response = await fetch('/api/dino/category');
+    const response = await fetch('/api/dino/categories');
 
     if(!response.ok){
         throw await response.text();
@@ -55,7 +55,7 @@ async function loadData(){
     for(const obj of data){
         const tr = document.createElement('tr');
         tr.onclick = () => {
-            location.href = '/dino?name=' + obj[categoryNames[0].name];
+            location.href = '/dino?id=' + obj.id;
         };
         for(const f of categoryNames){
             const td = document.createElement('td');
