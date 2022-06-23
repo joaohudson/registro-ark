@@ -4,25 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
+
+	"github.com/joaohudson/registro-ark/db"
+	"github.com/joaohudson/registro-ark/models"
 )
-
-type Dino struct {
-	Id         uint64 `json:"id"`
-	Name       string `json:"name"`
-	Region     string `json:"region"`
-	Locomotion string `json:"locomotion"`
-	Food       string `json:"food"`
-	Training   string `json:"training"`
-	Utility    string `json:"utility"`
-}
-
-type DinoCategoryResponse struct {
-	Regions     []string `json:"regions"`
-	Locomotions []string `json:"locomotions"`
-	Foods       []string `json:"foods"`
-}
 
 const DefaultInternalServerErrorMessage = "Erro interno do servidor, por favor tente mais tarde."
 
@@ -41,13 +27,13 @@ func main() {
 }
 
 func dinoCategories(response http.ResponseWriter, request *http.Request) {
-	result := DinoCategoryResponse{
+	result := models.DinoCategoryResponse{
 		Regions:     []string{},
 		Locomotions: []string{},
 		Foods:       []string{},
 	}
 
-	data, err := readData("data.json")
+	data, err := db.ReadData("data.json")
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(DefaultInternalServerErrorMessage))
@@ -81,7 +67,7 @@ func dinoCategories(response http.ResponseWriter, request *http.Request) {
 
 func dino(response http.ResponseWriter, request *http.Request) {
 
-	data, err := readData("data.json")
+	data, err := db.ReadData("data.json")
 	if err != nil {
 		fmt.Println("Erro ao ler arquivo json: ", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -108,9 +94,9 @@ func dino(response http.ResponseWriter, request *http.Request) {
 
 func dinos(response http.ResponseWriter, request *http.Request) {
 
-	result := []Dino{}
+	result := []models.Dino{}
 
-	data, err := readData("data.json")
+	data, err := db.ReadData("data.json")
 	if err != nil {
 		fmt.Println("Erro ao ler arquivo json: ", err)
 		response.WriteHeader(http.StatusInternalServerError)
@@ -148,22 +134,4 @@ func sendJson(response http.ResponseWriter, data interface{}) {
 		response.Write([]byte(DefaultInternalServerErrorMessage))
 		return
 	}
-}
-
-func readData(filename string) ([]Dino, error) {
-	fileReader, err := os.Open(filename)
-
-	if err != nil {
-		return []Dino{}, err
-	}
-
-	var obj []Dino
-	decoder := json.NewDecoder(fileReader)
-	err2 := decoder.Decode(&obj)
-
-	if err2 != nil {
-		return []Dino{}, err2
-	}
-
-	return obj, nil
 }
