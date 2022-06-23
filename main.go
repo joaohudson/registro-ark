@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-chi/chi"
+
 	"github.com/joaohudson/registro-ark/db"
 	"github.com/joaohudson/registro-ark/models"
 )
@@ -13,14 +15,17 @@ import (
 const DefaultInternalServerErrorMessage = "Erro interno do servidor, por favor tente mais tarde."
 
 func main() {
+
+	router := chi.NewRouter()
+
 	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fs)
+	router.Handle("/*", fs)
 
-	http.HandleFunc("/api/dino", dino)
-	http.HandleFunc("/api/dinos", dinos)
-	http.HandleFunc("/api/dino/categories", dinoCategories)
+	router.Get("/api/dino", dino)
+	router.Get("/api/dinos", dinos)
+	router.Get("/api/dino/categories", dinoCategories)
 
-	err := http.ListenAndServe(":8081", nil)
+	err := http.ListenAndServe(":8081", router)
 	if err != nil {
 		fmt.Println("Erro ao iniciar servidor: ", err)
 	}
