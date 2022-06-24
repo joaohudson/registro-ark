@@ -81,8 +81,8 @@ func dino(response http.ResponseWriter, request *http.Request) {
 	}
 
 	id, err := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
-
 	if err != nil {
+		fmt.Println("Erro no parse do id: ", err)
 		response.WriteHeader(http.StatusNotFound)
 		response.Write([]byte("Dino não encontrado!"))
 		return
@@ -92,9 +92,12 @@ func dino(response http.ResponseWriter, request *http.Request) {
 
 		if id == data[i].Id {
 			sendJson(response, data[i])
-			break
+			return
 		}
 	}
+
+	response.WriteHeader(http.StatusNotFound)
+	response.Write([]byte("Dino não encontrado!"))
 }
 
 func dinos(response http.ResponseWriter, request *http.Request) {
