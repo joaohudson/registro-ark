@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,13 +15,19 @@ import (
 
 const DefaultInternalServerErrorMessage = "Erro interno do servidor, por favor tente mais tarde."
 
+var database *sql.DB
+
 func main() {
+
+	database = db.CreatePostgresDatabase()
+	defer database.Close()
 
 	router := chi.NewRouter()
 
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("/*", fs)
 
+	router.Post("/api/dino", createDino)
 	router.Get("/api/dino", dino)
 	router.Get("/api/dinos", dinos)
 	router.Get("/api/dino/categories", dinoCategories)
@@ -38,7 +45,7 @@ func dinoCategories(response http.ResponseWriter, request *http.Request) {
 		Foods:       []string{},
 	}
 
-	data, err := db.ReadData("data.json")
+	data, err := db.ListAllDinos(database)
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(DefaultInternalServerErrorMessage))
@@ -70,15 +77,27 @@ func dinoCategories(response http.ResponseWriter, request *http.Request) {
 	sendJson(response, result)
 }
 
-func dino(response http.ResponseWriter, request *http.Request) {
-
-	data, err := db.ReadData("data.json")
+func createDino(response http.ResponseWriter, request *http.Request) {
+	var dino models.Dino
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&dino)
 	if err != nil {
-		fmt.Println("Erro ao ler arquivo json: ", err)
+		fmt.Println("Erro na criação de dino: ", err)
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Informações do dino inválidas!"))
+		return
+	}
+
+	err2 := db.CreateDino(database, dino)
+	if err2 != nil {
+		fmt.Println("Erro ao inserir dino no banco: ", err2)
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(DefaultInternalServerErrorMessage))
 		return
 	}
+}
+
+func dino(response http.ResponseWriter, request *http.Request) {
 
 	id, err := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
 	if err != nil {
@@ -88,25 +107,24 @@ func dino(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	for i := range data {
-
-		if id == data[i].Id {
-			sendJson(response, data[i])
-			return
-		}
+	data, err := db.FindDinoById(database, id)
+	if err != nil {
+		fmt.Println("Erro ao recuperar dino: ", err)
+		response.WriteHeader(http.StatusNotFound)
+		response.Write([]byte("Dino não encontrado!"))
+		return
 	}
 
-	response.WriteHeader(http.StatusNotFound)
-	response.Write([]byte("Dino não encontrado!"))
+	sendJson(response, data)
 }
 
 func dinos(response http.ResponseWriter, request *http.Request) {
 
 	result := []models.Dino{}
 
-	data, err := db.ReadData("data.json")
+	data, err := db.ListAllDinos(database)
 	if err != nil {
-		fmt.Println("Erro ao ler arquivo json: ", err)
+		fmt.Println("Erro ao listar dinos: ", err)
 		response.WriteHeader(http.StatusInternalServerError)
 		response.Write([]byte(DefaultInternalServerErrorMessage))
 		return
