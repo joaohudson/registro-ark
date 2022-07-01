@@ -110,40 +110,6 @@ func FindDinoById(db *sql.DB, id uint64) (models.Dino, error) {
 	return dino, nil
 }
 
-func ListAllDinos(db *sql.DB) ([]models.Dino, error) {
-	const query = `SELECT 
-	d.id_dino,
-	d.name_dino, 
-	f.name_food, 
-	l.name_locomotion, 
-	r.name_region, 
-	d.utility_dino, 
-	d.training_dino 
-	FROM dino d
-	INNER JOIN locomotion l ON d.id_locomotion = l.id_locomotion
-	INNER JOIN region r ON d.id_region = r.id_region
-	INNER JOIN food f ON d.id_food = f.id_food;`
-
-	rows, err := db.Query(query)
-	var result []models.Dino
-
-	if err != nil {
-		return []models.Dino{}, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var dino models.Dino
-		err := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.Utility, &dino.Training)
-		if err != nil {
-			return []models.Dino{}, err
-		}
-		result = append(result, dino)
-	}
-
-	return result, nil
-}
-
 //Funções auxiliares
 
 func existsCategory(db *sql.DB, categoryName string, id uint64) bool {
