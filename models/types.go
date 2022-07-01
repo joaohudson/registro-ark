@@ -10,8 +10,7 @@ type Dino struct {
 	Utility    string `json:"utility"`
 }
 
-type DinoCategoryResponse struct {
-	Regions     []string `json:"regions"`
-	Locomotions []string `json:"locomotions"`
-	Foods       []string `json:"foods"`
+type Category struct {
+	Id   uint64 `json:"id"`
+	Name string `json:"name"`
 }
