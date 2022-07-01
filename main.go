@@ -31,10 +31,76 @@ func main() {
 	router.Get("/api/dino", dino)
 	router.Get("/api/dinos", dinos)
 	router.Get("/api/dino/categories", dinoCategories)
+	router.Post("/api/dino/category/food", createFood)
+	router.Post("/api/dino/category/locomotion", createLocomotion)
+	router.Post("/api/dino/category/region", createRegion)
 
 	err := http.ListenAndServe(":8081", router)
 	if err != nil {
 		fmt.Println("Erro ao iniciar servidor: ", err)
+	}
+}
+
+func createLocomotion(response http.ResponseWriter, request *http.Request) {
+
+	decoder := json.NewDecoder(request.Body)
+
+	var locomotion models.CategoryRegistryRequest
+	err := decoder.Decode(&locomotion)
+	if err != nil {
+		fmt.Println("Erro ao fazer parse da locomoção: ", err)
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Locomoção inválida!"))
+		return
+	}
+
+	err2 := db.CreateLocomotion(database, locomotion)
+	if err2 != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte(err.Error()))
+		return
+	}
+}
+
+func createRegion(response http.ResponseWriter, request *http.Request) {
+
+	decoder := json.NewDecoder(request.Body)
+
+	var region models.CategoryRegistryRequest
+	err := decoder.Decode(&region)
+	if err != nil {
+		fmt.Println("Erro ao fazer parse da região: ", err)
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Região inválida!"))
+		return
+	}
+
+	err2 := db.CreateRegion(database, region)
+	if err2 != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte(err.Error()))
+		return
+	}
+}
+
+func createFood(response http.ResponseWriter, request *http.Request) {
+
+	decoder := json.NewDecoder(request.Body)
+
+	var food models.CategoryRegistryRequest
+	err := decoder.Decode(&food)
+	if err != nil {
+		fmt.Println("Erro ao fazer parse do tipo de alimentação: ", err)
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Tipo de Alimentação inválido!"))
+		return
+	}
+
+	err2 := db.CreateFood(database, food)
+	if err2 != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte(err.Error()))
+		return
 	}
 }
 
