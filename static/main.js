@@ -69,8 +69,10 @@ async function loadData(){
 }
 
 function pupulateDropdown(data, dropdown){
-    const optionsKeys =  ['Todos', ...data];
-    const optionsValues = ['', ...data];
+    const keys = data.map(k => k.name);
+    const values = data.map(v => v.id);
+    const optionsKeys =  ['Todos', ...keys];
+    const optionsValues = ['', ...values];
 
     for(let i = 0; i < optionsKeys.length; i++){
         const key = optionsKeys[i];
