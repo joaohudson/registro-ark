@@ -52,8 +52,6 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, *uti
 	(d.id_locomotion = $3 OR $3 = 0) AND
 	(d.id_food = $4 OR $4 = 0);`
 
-	fmt.Println(filter)
-
 	rows, err := db.Query(query, filter.Name, filter.RegionId, filter.LocomotionId, filter.FoodId)
 	if err != nil {
 		fmt.Println("Erro ao buscar dinos por filtro: ", err)
