@@ -39,46 +39,39 @@ func main() {
 }
 
 func dinoCategories(response http.ResponseWriter, request *http.Request) {
-	result := models.DinoCategoryResponse{
-		Regions:     []string{},
-		Locomotions: []string{},
-		Foods:       []string{},
-	}
 
-	data, err := db.ListAllDinos(database)
+	regions, err := db.ListAllRegions(database)
 	if err != nil {
 		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(DefaultInternalServerErrorMessage))
-		fmt.Println("Erro ao ler arquivo json: ", err)
+		response.Write([]byte(err.Error()))
 		return
 	}
 
-	regionSet := make(map[string]bool)
-	locomotionSet := make(map[string]bool)
-	foodSet := make(map[string]bool)
-	for i := range data {
-		regionSet[data[i].Region] = true
-		locomotionSet[data[i].Locomotion] = true
-		foodSet[data[i].Food] = true
+	locomotions, err2 := db.ListAllLocomotions(database)
+	if err2 != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(err2.Error()))
+		return
 	}
 
-	for k := range regionSet {
-		result.Regions = append(result.Regions, k)
+	foods, err3 := db.ListAllFoods(database)
+	if err3 != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(err3.Error()))
+		return
 	}
 
-	for k := range locomotionSet {
-		result.Locomotions = append(result.Locomotions, k)
-	}
-
-	for k := range foodSet {
-		result.Foods = append(result.Foods, k)
+	result := models.DinoCategoryResponse{
+		Regions:     regions,
+		Locomotions: locomotions,
+		Foods:       foods,
 	}
 
 	sendJson(response, result)
 }
 
 func createDino(response http.ResponseWriter, request *http.Request) {
-	var dino models.Dino
+	var dino models.DinoRegistryRequest
 	decoder := json.NewDecoder(request.Body)
 	err := decoder.Decode(&dino)
 	if err != nil {
@@ -90,9 +83,8 @@ func createDino(response http.ResponseWriter, request *http.Request) {
 
 	err2 := db.CreateDino(database, dino)
 	if err2 != nil {
-		fmt.Println("Erro ao inserir dino no banco: ", err2)
 		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(DefaultInternalServerErrorMessage))
+		response.Write([]byte(err2.Error()))
 		return
 	}
 }
@@ -120,33 +112,60 @@ func dino(response http.ResponseWriter, request *http.Request) {
 
 func dinos(response http.ResponseWriter, request *http.Request) {
 
-	result := []models.Dino{}
-
-	data, err := db.ListAllDinos(database)
+	region, err := parseQueryParameterUint64(request, "region")
 	if err != nil {
-		fmt.Println("Erro ao listar dinos: ", err)
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(DefaultInternalServerErrorMessage))
+		fmt.Println("Erro no parse do parâmetro: ", err)
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Região inválida!"))
 		return
 	}
 
-	region := request.URL.Query().Get("region")
-	locomotion := request.URL.Query().Get("locomotion")
-	food := request.URL.Query().Get("food")
-	name := request.URL.Query().Get("name")
-
-	for i := range data {
-		regionMatch := region == "" || region == data[i].Region
-		locomotionMatch := locomotion == "" || locomotion == data[i].Locomotion
-		foodMatch := food == "" || food == data[i].Food
-		nameMatch := name == "" || name == data[i].Name
-
-		if regionMatch && locomotionMatch && foodMatch && nameMatch {
-			result = append(result, data[i])
-		}
+	locomotion, err2 := parseQueryParameterUint64(request, "locomotion")
+	if err2 != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Locomoção inválida!"))
+		return
 	}
 
-	sendJson(response, result)
+	food, err3 := parseQueryParameterUint64(request, "food")
+	if err3 != nil {
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Tipo de alimentação inválida!"))
+		return
+	}
+
+	name := request.URL.Query().Get("name")
+
+	filter := models.DinoFilter{
+		RegionId:     region,
+		LocomotionId: locomotion,
+		FoodId:       food,
+		Name:         name,
+	}
+
+	dinos, searchErr := db.FindDinoByFilter(database, filter)
+	if searchErr != nil {
+		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(searchErr.Error()))
+		return
+	}
+
+	sendJson(response, dinos)
+}
+
+//funções auxiliares
+
+func parseQueryParameterUint64(request *http.Request, parameterName string) (uint64, error) {
+	valueStr := request.URL.Query().Get(parameterName)
+	var value uint64
+	var err error
+	if valueStr == "" {
+		value, err = 0, nil
+	} else {
+		value, err = strconv.ParseUint(valueStr, 10, 64)
+	}
+
+	return value, err
 }
 
 func sendJson(response http.ResponseWriter, data interface{}) {
