@@ -11,6 +11,10 @@ import (
 
 func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) *util.AppError {
 
+	if existsDino(db, dino.Name) {
+		return util.ThrowAppError("Já existe um dino com esse nome!")
+	}
+
 	if !existsCategory(db, "locomotion", dino.LocomotionId) {
 		return util.ThrowAppError("Informe uma locomoção válida!")
 	}
@@ -116,6 +120,17 @@ func existsCategory(db *sql.DB, categoryName string, id uint64) bool {
 
 	if err != nil {
 		fmt.Printf("Erro ao verificar categoria de dino %v para id %v: %v\n", categoryName, id, err)
+		return false
+	}
+	defer rows.Close()
+
+	return rows.Next()
+}
+
+func existsDino(db *sql.DB, dinoName string) bool {
+	rows, err := db.Query("SELECT * FROM dino WHERE name_dino = $1;", dinoName)
+	if err != nil {
+		fmt.Println("Erro ao verificar dino por nome: ", err)
 		return false
 	}
 	defer rows.Close()
