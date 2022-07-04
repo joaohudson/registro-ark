@@ -54,7 +54,8 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, *uti
 	(d.name_dino = $1 OR $1 = '') AND
 	(d.id_region = $2 OR $2 = 0) AND
 	(d.id_locomotion = $3 OR $3 = 0) AND
-	(d.id_food = $4 OR $4 = 0);`
+	(d.id_food = $4 OR $4 = 0)
+	ORDER BY(d.name_dino) ASC;`
 
 	rows, err := db.Query(query, filter.Name, filter.RegionId, filter.LocomotionId, filter.FoodId)
 	if err != nil {
