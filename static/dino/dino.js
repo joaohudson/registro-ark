@@ -1,5 +1,6 @@
 const h1 = document.getElementById('h1');
 const title = document.getElementById('title');
+const infoDiv = document.getElementById('infoDiv');
 const regionP = document.getElementById('regionP');
 const locomotionP = document.getElementById('locomotionP');
 const foodP = document.getElementById('foodP');
@@ -16,10 +17,17 @@ async function getDino(id){
     return await response.json();
 }
 
+function showError(message){
+    const p = document.createElement('p');
+    p.innerText = message;
+    infoDiv.innerHTML = '';
+    infoDiv.appendChild(p);
+}
+
 async function main(){
     const params = new URLSearchParams(location.search);
     if(!params.has('id')){
-        alert('Dino não encontrado!');
+        showError('Dino não encontrado!');
         return;
     }
     const dinoId = params.get('id');
@@ -30,7 +38,7 @@ async function main(){
         dino = await getDino(dinoId)
     }
     catch(e){
-        alert(e);
+        showError(e);
         return;
     }
 
