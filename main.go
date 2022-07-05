@@ -11,6 +11,8 @@ import (
 
 	"github.com/joaohudson/registro-ark/db"
 	"github.com/joaohudson/registro-ark/models"
+	service "github.com/joaohudson/registro-ark/services"
+	"github.com/joaohudson/registro-ark/util"
 )
 
 const DefaultInternalServerErrorMessage = "Erro interno do servidor, por favor tente mais tarde."
@@ -29,8 +31,9 @@ func main() {
 
 	router.Post("/api/dino", createDino)
 	router.Delete("/api/dino", deleteDino)
-	router.Get("/api/dino", dino)
-	router.Get("/api/dinos", dinos)
+	router.Get("/api/dino", findDinoById)
+	router.Get("/api/dinos", findDinoByFilter)
+
 	router.Get("/api/dino/categories", dinoCategories)
 	router.Post("/api/dino/category/food", createFood)
 	router.Post("/api/dino/category/locomotion", createLocomotion)
@@ -148,10 +151,9 @@ func createDino(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	err2 := db.CreateDino(database, dino)
+	err2 := service.CreateDino(database, dino)
 	if err2 != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(err2.Error()))
+		sendError(response, err2)
 		return
 	}
 }
@@ -165,16 +167,15 @@ func deleteDino(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	err2 := db.DeleteDino(database, id)
+	err2 := service.DeleteDino(database, id)
 
 	if err2 != nil {
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte(err2.Error()))
+		sendError(response, err2)
 		return
 	}
 }
 
-func dino(response http.ResponseWriter, request *http.Request) {
+func findDinoById(response http.ResponseWriter, request *http.Request) {
 
 	id, err := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
 	if err != nil {
@@ -184,18 +185,16 @@ func dino(response http.ResponseWriter, request *http.Request) {
 		return
 	}
 
-	data, err := db.FindDinoById(database, id)
-	if err != nil {
-		fmt.Println("Erro ao recuperar dino: ", err)
-		response.WriteHeader(http.StatusNotFound)
-		response.Write([]byte("Dino não encontrado!"))
+	data, err2 := service.FindDinoById(database, id)
+	if err2 != nil {
+		sendError(response, err2)
 		return
 	}
 
 	sendJson(response, data)
 }
 
-func dinos(response http.ResponseWriter, request *http.Request) {
+func findDinoByFilter(response http.ResponseWriter, request *http.Request) {
 
 	region, err := parseQueryParameterUint64(request, "region")
 	if err != nil {
@@ -228,10 +227,9 @@ func dinos(response http.ResponseWriter, request *http.Request) {
 		Name:         name,
 	}
 
-	dinos, searchErr := db.FindDinoByFilter(database, filter)
+	dinos, searchErr := service.FindDinoByFilter(database, filter)
 	if searchErr != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(searchErr.Error()))
+		sendError(response, searchErr)
 		return
 	}
 
@@ -251,6 +249,11 @@ func parseQueryParameterUint64(request *http.Request, parameterName string) (uin
 	}
 
 	return value, err
+}
+
+func sendError(response http.ResponseWriter, err *util.ApiError) {
+	response.WriteHeader(err.StatusCode)
+	response.Write([]byte(err.Message))
 }
 
 func sendJson(response http.ResponseWriter, data interface{}) {
