@@ -11,6 +11,11 @@ h1{
     font-size: 48px;
     text-shadow: 2px 1.5px 0 #be823e;
 }
+select, button{
+    background-color: black;
+    color: #be823e;
+    height: 20px;
+}
 .centered{
     align-items: center;
     text-align: center;
