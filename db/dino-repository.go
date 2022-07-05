@@ -2,42 +2,23 @@ package db
 
 import (
 	"database/sql"
-	"fmt"
-	"strconv"
 
 	"github.com/joaohudson/registro-ark/models"
-	"github.com/joaohudson/registro-ark/util"
 )
 
-func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) *util.AppError {
-
-	if existsDinoByName(db, dino.Name) {
-		return util.ThrowAppError("Já existe um dino com esse nome!")
-	}
-
-	if !existsCategoryById(db, "locomotion", dino.LocomotionId) {
-		return util.ThrowAppError("Informe uma locomoção válida!")
-	}
-
-	if !existsCategoryById(db, "region", dino.RegionId) {
-		return util.ThrowAppError("Informe uma região válida!")
-	}
-
-	if !existsCategoryById(db, "food", dino.FoodId) {
-		return util.ThrowAppError("Informe um tipo de alimentação válida!")
-	}
+func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) error {
 
 	rows, err := db.Query("INSERT INTO dino(name_dino, id_food, id_locomotion, id_region, utility_dino, training_dino) VALUES($1, $2, $3, $4, $5, $6);", dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, dino.Utility, dino.Training)
 	if err != nil {
-		fmt.Println("Erro ao inserir dados no banco: ", err)
-		return util.ThrowAppError("Erro interno do servidor, tente novamente mais tarde.")
+
+		return err
 	}
 	defer rows.Close()
 
 	return nil
 }
 
-func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, *util.AppError) {
+func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, error) {
 	const query = `SELECT 
 	d.id_dino,
 	d.name_dino, 
@@ -59,8 +40,7 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, *uti
 
 	rows, err := db.Query(query, filter.Name, filter.RegionId, filter.LocomotionId, filter.FoodId)
 	if err != nil {
-		fmt.Println("Erro ao buscar dinos por filtro: ", err)
-		return []models.Dino{}, util.ThrowAppError("Não foi possível efetuar a busca.")
+		return []models.Dino{}, err
 	}
 	defer rows.Close()
 
@@ -70,8 +50,7 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, *uti
 	for rows.Next() {
 		err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.Utility, &dino.Training)
 		if err2 != nil {
-			fmt.Println("Erro ao escanear dinos por filtro: ", err2)
-			return []models.Dino{}, util.ThrowAppError("Não foi possível efetuar a busca.")
+			return []models.Dino{}, err2
 		}
 		result = append(result, dino)
 	}
@@ -79,7 +58,7 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, *uti
 	return result, nil
 }
 
-func FindDinoById(db *sql.DB, id uint64) (models.Dino, error) {
+func FindDinoById(db *sql.DB, id uint64) (*models.Dino, error) {
 	const query = `SELECT 
 	d.id_dino,
 	d.name_dino, 
@@ -96,31 +75,27 @@ func FindDinoById(db *sql.DB, id uint64) (models.Dino, error) {
 
 	rows, err := db.Query(query, id)
 	if err != nil {
-		return models.Dino{}, err
+		return nil, err
 	}
 	defer rows.Close()
 
 	var dino models.Dino
 	if !rows.Next() {
-		return models.Dino{}, util.ThrowAppError("Query vazia para id especificado: " + strconv.FormatUint(id, 10))
+		return nil, nil
 	}
 	err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.Utility, &dino.Training)
 
 	if err2 != nil {
-		return models.Dino{}, err2
+		return nil, err2
 	}
 
-	return dino, nil
+	return &dino, nil
 }
 
-func DeleteDino(db *sql.DB, id uint64) *util.AppError {
-	if !existsDinoById(db, id) {
-		return util.ThrowAppError("Esse dino não existe!")
-	}
-
+func DeleteDino(db *sql.DB, id uint64) error {
 	rows, err := db.Query("DELETE FROM dino WHERE id_dino = $1;", id)
 	if err != nil {
-		fmt.Println("Erro ao deletar dino: ", err)
+		return err
 	}
 	defer rows.Close()
 
@@ -129,24 +104,22 @@ func DeleteDino(db *sql.DB, id uint64) *util.AppError {
 
 //Funções auxiliares
 
-func existsDinoById(db *sql.DB, id uint64) bool {
+func ExistsDinoById(db *sql.DB, id uint64) (bool, error) {
 	rows, err := db.Query("SELECT * FROM dino WHERE id_dino = $1;", id)
 	if err != nil {
-		fmt.Println("Erro ao verificar dino por id: ", err)
-		return false
+		return false, err
 	}
 	defer rows.Close()
 
-	return rows.Next()
+	return rows.Next(), nil
 }
 
-func existsDinoByName(db *sql.DB, dinoName string) bool {
+func ExistsDinoByName(db *sql.DB, dinoName string) (bool, error) {
 	rows, err := db.Query("SELECT * FROM dino WHERE name_dino = $1;", dinoName)
 	if err != nil {
-		fmt.Println("Erro ao verificar dino por nome: ", err)
-		return false
+		return false, err
 	}
 	defer rows.Close()
 
-	return rows.Next()
+	return rows.Next(), nil
 }
