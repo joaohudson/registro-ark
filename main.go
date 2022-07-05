@@ -28,6 +28,7 @@ func main() {
 	router.Handle("/*", fs)
 
 	router.Post("/api/dino", createDino)
+	router.Delete("/api/dino", deleteDino)
 	router.Get("/api/dino", dino)
 	router.Get("/api/dinos", dinos)
 	router.Get("/api/dino/categories", dinoCategories)
@@ -150,6 +151,24 @@ func createDino(response http.ResponseWriter, request *http.Request) {
 	err2 := db.CreateDino(database, dino)
 	if err2 != nil {
 		response.WriteHeader(http.StatusInternalServerError)
+		response.Write([]byte(err2.Error()))
+		return
+	}
+}
+
+func deleteDino(response http.ResponseWriter, request *http.Request) {
+	id, err := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
+	if err != nil {
+		fmt.Println("Erro no parse do id: ", err)
+		response.WriteHeader(http.StatusNotFound)
+		response.Write([]byte("Dino não encontrado!"))
+		return
+	}
+
+	err2 := db.DeleteDino(database, id)
+
+	if err2 != nil {
+		response.WriteHeader(http.StatusBadRequest)
 		response.Write([]byte(err2.Error()))
 		return
 	}

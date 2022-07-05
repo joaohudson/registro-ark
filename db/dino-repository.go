@@ -11,19 +11,19 @@ import (
 
 func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) *util.AppError {
 
-	if existsDino(db, dino.Name) {
+	if existsDinoByName(db, dino.Name) {
 		return util.ThrowAppError("Já existe um dino com esse nome!")
 	}
 
-	if !existsCategory(db, "locomotion", dino.LocomotionId) {
+	if !existsCategoryById(db, "locomotion", dino.LocomotionId) {
 		return util.ThrowAppError("Informe uma locomoção válida!")
 	}
 
-	if !existsCategory(db, "region", dino.RegionId) {
+	if !existsCategoryById(db, "region", dino.RegionId) {
 		return util.ThrowAppError("Informe uma região válida!")
 	}
 
-	if !existsCategory(db, "food", dino.FoodId) {
+	if !existsCategoryById(db, "food", dino.FoodId) {
 		return util.ThrowAppError("Informe um tipo de alimentação válida!")
 	}
 
@@ -113,14 +113,26 @@ func FindDinoById(db *sql.DB, id uint64) (models.Dino, error) {
 	return dino, nil
 }
 
+func DeleteDino(db *sql.DB, id uint64) *util.AppError {
+	if !existsDinoById(db, id) {
+		return util.ThrowAppError("Esse dino não existe!")
+	}
+
+	rows, err := db.Query("DELETE FROM dino WHERE id_dino = $1;", id)
+	if err != nil {
+		fmt.Println("Erro ao deletar dino: ", err)
+	}
+	defer rows.Close()
+
+	return nil
+}
+
 //Funções auxiliares
 
-func existsCategory(db *sql.DB, categoryName string, id uint64) bool {
-	query := "SELECT * FROM " + categoryName + " WHERE id_" + categoryName + " = $1;"
-	rows, err := db.Query(query, id)
-
+func existsDinoById(db *sql.DB, id uint64) bool {
+	rows, err := db.Query("SELECT * FROM dino WHERE id_dino = $1;", id)
 	if err != nil {
-		fmt.Printf("Erro ao verificar categoria de dino %v para id %v: %v\n", categoryName, id, err)
+		fmt.Println("Erro ao verificar dino por id: ", err)
 		return false
 	}
 	defer rows.Close()
@@ -128,7 +140,7 @@ func existsCategory(db *sql.DB, categoryName string, id uint64) bool {
 	return rows.Next()
 }
 
-func existsDino(db *sql.DB, dinoName string) bool {
+func existsDinoByName(db *sql.DB, dinoName string) bool {
 	rows, err := db.Query("SELECT * FROM dino WHERE name_dino = $1;", dinoName)
 	if err != nil {
 		fmt.Println("Erro ao verificar dino por nome: ", err)
