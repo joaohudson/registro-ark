@@ -3,30 +3,8 @@
     <head>
         <style>
             label{
-                font-size: 20px;
-                text-shadow: 1.4px 1px 0 #be823e;
                 font-weight: bold;
-            }
-            p{
-                color: #be823e;
-                font-size: 14px;
-                font-weight: bold;
-                text-shadow: 1.2px .5px 0 black;
-            }
-            input{
-                text-align: center;
-            }
-            input, textarea{
-                background-color: black;
-                margin-top: 10px;
-                width: 80%;
-                color: #be823e;
-            }
-            textarea{
-                height: 200px;
-            }
-            .topMargin{
-                margin-top: 30px;
+                text-shadow: 1.2px 0 0 #aaa;
             }
             #infoDiv{
                 border: solid 1px black;
@@ -38,40 +16,20 @@
                 padding-bottom: 20px;
             }
         </style>
-        <title>Registro Ark - Admin</title>
-        <meta charset="utf-8">
+        <title>Registro Ark</title>
+        <link href="/css/global.css" rel="stylesheet">
         <link href="/images/icon.png" rel="icon">
-        <link href="../css/global.css" rel="stylesheet">
+        <meta charset="utf-8">
     </head>
     <body>
-        <h1 class="centered">Adicionar Novo Dino</h1>
-        <div id="infoDiv" class="centered">
-            <label id="foodLabel">Alimentação:</label>
-            <select id="foodField"></select>
-            <label id="locomotionLabel">Locomoção:</label>
-            <select id="locomotionField"></select>
-            <label id="regionLabel">Região:</label>
-            <select id="regionField"></select>
-            <div class="topMargin"></div>
-            <div>
-                <label>Nome:</label>
-                <br>
-                <input type="text" id="nameField">
+        <h1 class="centered">Menu Principal</h1>
+        <div id="infoDiv">
+            <div class="buttonLinkDiv">
+                <a href="/admin/dino/add">Adiconar Dino</a>
             </div>
-            <div>
-                <label>Utilidade:</label>
-                <br>
-                <input type="text" id="utilityField">
-            </div>
-            <div>
-                <label>Treinamento:</label>
-                <br>
-                <textarea id="trainingField"></textarea>
-            </div>
-            <div class="centered">
-                <button id="createDinoButton">Adicionar</button>
+            <div class="buttonLinkDiv">
+                <a href="/admin/dino/list">Dinos Adicionados</a>
             </div>
         </div>
-        <script src="admin.js" type="text/javascript"></script>
     </body>
 </html>

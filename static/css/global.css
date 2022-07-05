@@ -6,6 +6,8 @@ body{
     background-repeat: no-repeat;
     background-size: cover;
     background-image: url('/images/ark-survival-evolved1-18.webp');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 h1{
     font-size: 48px;
@@ -19,4 +21,20 @@ select, button{
 .centered{
     align-items: center;
     text-align: center;
+}
+.buttonLinkDiv{
+    font-weight: bold;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    background-color: black;
+    border-radius: 10%;
+    width: 180px;
+    padding: 10px 10px 10px 10px;
+}
+
+.buttonLinkDiv a{
+    color: #be823e;
+    text-decoration: none;
 }
