@@ -25,9 +25,6 @@
             textarea{
                 height: 200px;
             }
-            .topMargin{
-                margin-top: 30px;
-            }
             #infoDiv{
                 border: solid 1px black;
                 margin-left: auto;
@@ -52,7 +49,7 @@
             <select id="locomotionField"></select>
             <label id="regionLabel">Região:</label>
             <select id="regionField"></select>
-            <div class="topMargin"></div>
+            <div style="margin-top: 30px;"></div>
             <div>
                 <label>Nome:</label>
                 <br>
@@ -70,6 +67,10 @@
             </div>
             <div class="centered">
                 <button id="createDinoButton">Adicionar</button>
+            </div>
+            <div style="margin-top: 10px;"></div>
+            <div class="centered">
+                <button onclick="location.href = '/admin/dino/list';">Exibir Dinos Adicionados</button>
             </div>
         </div>
         <script src="add-dino.js" type="text/javascript"></script>

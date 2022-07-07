@@ -17,6 +17,7 @@ select, button{
     background-color: black;
     color: #be823e;
     height: 20px;
+    cursor: pointer;
 }
 .centered{
     align-items: center;

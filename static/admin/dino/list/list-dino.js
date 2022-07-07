@@ -8,6 +8,14 @@ async function fetchDinos(region = '', locomotion = '', food = '', name = ''){
     return await response.json()
 }
 
+async function deleteDino(id){
+    const response = await fetch('/api/dino?id='+id, {method: 'DELETE'});
+    
+    if(!response.ok){
+        throw await response.text();
+    }
+}
+
 async function loadData(){
     let data;
     try{
@@ -34,18 +42,45 @@ async function loadData(){
         th.innerText = f.label;
         trTitle.appendChild(th);
     }
+    const actionsTh = document.createElement('th');
+    actionsTh.innerText = 'Ações';
+    trTitle.appendChild(actionsTh);
     table.appendChild(trTitle);
     
     for(const obj of data){
         const tr = document.createElement('tr');
-        tr.onclick = () => {
-            location.href = '/dino?id=' + obj.id;
-        };
         for(const f of categoryNames){
             const td = document.createElement('td');
             td.innerText = obj[f.name];
             tr.appendChild(td);
         }
+        table.appendChild(tr);
+
+        const actionsTd = document.createElement('td');
+        
+        const seeButton = document.createElement('button');
+        seeButton.onclick = () => location.href = '/dino?id=' + obj.id;
+        seeButton.innerText = '🔍';
+        seeButton.className = 'actionButton';
+        actionsTd.appendChild(seeButton);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.onclick = async () => {
+            try{
+                await deleteDino(obj.id);
+            }
+            catch(e){
+                alert(e);
+                return;
+            }
+
+            loadData();
+        };
+        deleteButton.innerText = '❌';
+        deleteButton.className = 'actionButton';
+        actionsTd.appendChild(deleteButton);
+
+        tr.appendChild(actionsTd);
         table.appendChild(tr);
     }
 
