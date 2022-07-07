@@ -10,8 +10,6 @@ import (
 	"github.com/joaohudson/registro-ark/db"
 )
 
-const DefaultInternalServerErrorMessage = "Erro interno do servidor, por favor tente mais tarde."
-
 func main() {
 
 	database := db.CreatePostgresDatabase()

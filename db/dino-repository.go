@@ -102,8 +102,6 @@ func DeleteDino(db *sql.DB, id uint64) error {
 	return nil
 }
 
-//Funções auxiliares
-
 func ExistsDinoById(db *sql.DB, id uint64) (bool, error) {
 	rows, err := db.Query("SELECT * FROM dino WHERE id_dino = $1;", id)
 	if err != nil {

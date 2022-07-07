@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/joaohudson/registro-ark/db"
 	"github.com/joaohudson/registro-ark/models"
 	service "github.com/joaohudson/registro-ark/services"
 )
@@ -93,10 +92,9 @@ func (c *DinoController) CreateLocomotion(response http.ResponseWriter, request 
 		return
 	}
 
-	err2 := db.CreateLocomotion(c.database, locomotion)
+	err2 := service.CreateLocomotion(c.database, locomotion)
 	if err2 != nil {
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte(err.Error()))
+		sendError(response, err2)
 		return
 	}
 }
@@ -114,10 +112,9 @@ func (c *DinoController) CreateRegion(response http.ResponseWriter, request *htt
 		return
 	}
 
-	err2 := db.CreateRegion(c.database, region)
+	err2 := service.CreateRegion(c.database, region)
 	if err2 != nil {
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte(err.Error()))
+		sendError(response, err2)
 		return
 	}
 }
@@ -135,34 +132,30 @@ func (c *DinoController) CreateFood(response http.ResponseWriter, request *http.
 		return
 	}
 
-	err2 := db.CreateFood(c.database, food)
+	err2 := service.CreateFood(c.database, food)
 	if err2 != nil {
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte(err.Error()))
+		sendError(response, err2)
 		return
 	}
 }
 
 func (c *DinoController) DinoCategories(response http.ResponseWriter, request *http.Request) {
 
-	regions, err := db.ListAllRegions(c.database)
+	regions, err := service.ListAllRegions(c.database)
 	if err != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(err.Error()))
+		sendError(response, err)
 		return
 	}
 
-	locomotions, err2 := db.ListAllLocomotions(c.database)
+	locomotions, err2 := service.ListAllLocomotions(c.database)
 	if err2 != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(err2.Error()))
+		sendError(response, err2)
 		return
 	}
 
-	foods, err3 := db.ListAllFoods(c.database)
+	foods, err3 := service.ListAllFoods(c.database)
 	if err3 != nil {
-		response.WriteHeader(http.StatusInternalServerError)
-		response.Write([]byte(err3.Error()))
+		sendError(response, err3)
 		return
 	}
 
