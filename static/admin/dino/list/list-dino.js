@@ -61,13 +61,14 @@ async function loadData(){
         const seeButton = document.createElement('button');
         seeButton.onclick = () => location.href = '/dino?id=' + obj.id;
         seeButton.innerText = '🔍';
+        seeButton.title = 'Detalhes do dino';
         seeButton.className = 'actionButton';
         actionsTd.appendChild(seeButton);
 
         const deleteButton = document.createElement('button');
         deleteButton.onclick = async () => {
             try{
-                const ok = await dialog.showConfirm('Tem certeza que dejesa deletar este dino?');
+                const ok = await dialog.showConfirm('Tem certeza que dejesa deletar ' + obj.name +'?');
                 if(ok)
                     await deleteDino(obj.id);
             }
@@ -79,6 +80,7 @@ async function loadData(){
             loadData();
         };
         deleteButton.innerText = '❌';
+        deleteButton.title = 'Remover dino';
         deleteButton.className = 'actionButton';
         actionsTd.appendChild(deleteButton);
 
