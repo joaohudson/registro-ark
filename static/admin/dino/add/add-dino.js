@@ -38,11 +38,11 @@ async function createDino(){
         await postDino(dino);
     }
     catch(e){
-        alert(e);
+        dialog.showMessage(e);
         return;
     }
 
-    alert('Dino criado com sucesso!');
+    dialog.showMessage('Dino criado com sucesso!');
 }
 
 function pupulateDropdown(data, dropdown){
@@ -68,7 +68,7 @@ async function main(){
         categories = await fetchCategories();
     }
     catch(e){
-        alert(e);
+        dialog.showMessage(e);
         return;
     }
 

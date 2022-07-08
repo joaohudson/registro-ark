@@ -19,6 +19,20 @@ select, button{
     height: 20px;
     cursor: pointer;
 }
+dialog {
+    background-color: #be823e;
+    border-color: black;
+    width: 30%;
+    height: 80px;
+    align-items: baseline;
+    text-align: center;
+}
+dialog p{
+    color: black;
+}
+dialog button{
+    margin-right: 15px;
+}
 .centered{
     align-items: center;
     text-align: center;
@@ -34,7 +48,6 @@ select, button{
     width: 180px;
     padding: 10px 10px 10px 10px;
 }
-
 .buttonLinkDiv a{
     color: #be823e;
     text-decoration: none;

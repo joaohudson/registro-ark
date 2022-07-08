@@ -21,7 +21,7 @@ async function loadData(){
     try{
         data = await fetchDinos();
     }catch(e){
-        alert(e);
+        dialog.showMessage(e);
         return;
     }
 
@@ -67,10 +67,12 @@ async function loadData(){
         const deleteButton = document.createElement('button');
         deleteButton.onclick = async () => {
             try{
-                await deleteDino(obj.id);
+                const ok = await dialog.showConfirm('Tem certeza que dejesa deletar este dino?');
+                if(ok)
+                    await deleteDino(obj.id);
             }
             catch(e){
-                alert(e);
+                dialog.showMessage(e);
                 return;
             }
 

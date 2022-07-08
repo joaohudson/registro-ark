@@ -29,7 +29,7 @@ async function loadData(){
     try{
         data = await fetchDinos(regionField.value, locomotionField.value, foodField.value);
     }catch(e){
-        alert(e);
+        dialog.showMessage(e);
         return;
     }
 
@@ -92,7 +92,7 @@ async function main(){
         categories = await fetchCategories();
     }
     catch(e){
-        alert(e);
+        dialog.showMessage(e);
         return;
     }
     
