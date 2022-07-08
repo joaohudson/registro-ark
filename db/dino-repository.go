@@ -2,13 +2,22 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/joaohudson/registro-ark/models"
 )
 
 func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) error {
 
-	rows, err := db.Query("INSERT INTO dino(name_dino, id_food, id_locomotion, id_region, utility_dino, training_dino) VALUES($1, $2, $3, $4, $5, $6);", dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, dino.Utility, dino.Training)
+	const admId = 1
+	now := time.Now()
+
+	const query = `
+	INSERT INTO 
+	dino(name_dino, id_food, id_locomotion, id_region, id_adm, dt_creation, utility_dino, training_dino)
+	VALUES($1, $2, $3, $4, $5, $6, $7, $8);`
+
+	rows, err := db.Query(query, dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, admId, now, dino.Utility, dino.Training)
 	if err != nil {
 
 		return err
@@ -25,6 +34,7 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, erro
 	f.name_food, 
 	l.name_locomotion, 
 	r.name_region, 
+	d.dt_creation,
 	d.utility_dino, 
 	d.training_dino 
 	FROM dino d
@@ -48,7 +58,7 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, erro
 	var dino models.Dino
 
 	for rows.Next() {
-		err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.Utility, &dino.Training)
+		err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
 		if err2 != nil {
 			return []models.Dino{}, err2
 		}
@@ -64,7 +74,8 @@ func FindDinoById(db *sql.DB, id uint64) (*models.Dino, error) {
 	d.name_dino, 
 	f.name_food, 
 	l.name_locomotion, 
-	r.name_region, 
+	r.name_region,
+	d.dt_creation, 
 	d.utility_dino, 
 	d.training_dino 
 	FROM dino d
@@ -83,7 +94,7 @@ func FindDinoById(db *sql.DB, id uint64) (*models.Dino, error) {
 	if !rows.Next() {
 		return nil, nil
 	}
-	err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.Utility, &dino.Training)
+	err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
 
 	if err2 != nil {
 		return nil, err2

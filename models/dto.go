@@ -13,6 +13,14 @@ type CategoryRegistryRequest struct {
 	Name string `json:"name"`
 }
 
+type AdmRegistryRequest struct {
+	Name                      string `json:"name"`
+	Password                  string `json:"password"`
+	PermissionManagerDino     bool   `json:"permissionManagerDino"`
+	PermissionManagerCategory bool   `json:"permissionManagerCategory"`
+	PermissionManagerAdm      bool   `json:"permissionManagerAdm"`
+}
+
 type DinoFilter struct {
 	Name         string
 	RegionId     uint64

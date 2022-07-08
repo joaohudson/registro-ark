@@ -13,6 +13,15 @@ CREATE TABLE food(
     id_food BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name_food VARCHAR(80) NOT NULL
 );
+-- Dados dos usuários adms
+CREATE TABLE adm(
+    id_adm BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    name_adm VARCHAR(80) NOT NULL,
+    password_adm VARCHAR(80) NOT NULL,
+    permission_manager_dino BOOLEAN NOT NULL,
+    permission_manager_category BOOLEAN NOT NULL,
+    permission_manager_adm BOOLEAN NOT NULL
+);
 -- Dados gerais do dinossauro
 CREATE TABLE dino(
     id_dino BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -20,6 +29,8 @@ CREATE TABLE dino(
     id_region BIGINT REFERENCES region(id_region),
     id_food BIGINT REFERENCES food(id_food),
     id_locomotion BIGINT REFERENCES locomotion(id_locomotion),
+    id_adm BIGINT REFERENCES adm(id_adm),
+    dt_creation TIMESTAMP NOT NULL,
     utility_dino VARCHAR(300) NOT NULL,
     training_dino TEXT NOT NULL
 );

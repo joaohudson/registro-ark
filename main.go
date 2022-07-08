@@ -20,17 +20,20 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("/*", fs)
 
+	//dino routes
 	dinoController := controller.NewDinoController(database)
-
 	router.Post("/api/dino", dinoController.CreateDino)
 	router.Delete("/api/dino", dinoController.DeleteDino)
 	router.Get("/api/dino", dinoController.FindDinoById)
 	router.Get("/api/dinos", dinoController.FindDinoByFilter)
-
 	router.Get("/api/dino/categories", dinoController.DinoCategories)
 	router.Post("/api/dino/category/food", dinoController.CreateFood)
 	router.Post("/api/dino/category/locomotion", dinoController.CreateLocomotion)
 	router.Post("/api/dino/category/region", dinoController.CreateRegion)
+
+	//adm routes
+	admController := controller.NewAdmController(database)
+	router.Post("/api/adm", admController.CreateAdm)
 
 	err := http.ListenAndServe(":8081", router)
 	if err != nil {
