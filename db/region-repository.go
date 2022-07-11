@@ -16,6 +16,16 @@ func CreateRegion(db *sql.DB, region models.CategoryRegistryRequest) error {
 	return nil
 }
 
+func DeleteRegion(db *sql.DB, id uint64) error {
+	rows, err := db.Query("DELETE FROM region WHERE id_region = $1", id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+}
+
 func ListAllRegions(db *sql.DB) ([]models.Category, error) {
 	rows, err := db.Query("SELECT id_region, name_region FROM region;")
 	if err != nil {

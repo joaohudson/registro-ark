@@ -100,6 +100,19 @@ func (c *DinoController) CreateLocomotion(response http.ResponseWriter, request 
 	}
 }
 
+func (c *DinoController) DeleteLocomotion(response http.ResponseWriter, request *http.Request) {
+	id, err := parseQueryParameterUint64(request, "id")
+	if err != nil {
+		fmt.Println("Erro no parse do id:", err)
+		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
+	}
+
+	err2 := service.DeleteLocomotion(c.database, id)
+	if err2 != nil {
+		sendError(response, err2)
+	}
+}
+
 func (c *DinoController) CreateRegion(response http.ResponseWriter, request *http.Request) {
 
 	decoder := json.NewDecoder(request.Body)
@@ -117,6 +130,19 @@ func (c *DinoController) CreateRegion(response http.ResponseWriter, request *htt
 	if err2 != nil {
 		sendError(response, err2)
 		return
+	}
+}
+
+func (c *DinoController) DeleteRegion(response http.ResponseWriter, request *http.Request) {
+	id, err := parseQueryParameterUint64(request, "id")
+	if err != nil {
+		fmt.Println("Erro no parse do id:", err)
+		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
+	}
+
+	err2 := service.DeleteRegion(c.database, id)
+	if err2 != nil {
+		sendError(response, err2)
 	}
 }
 

@@ -29,3 +29,33 @@ func ListAllRegions(database *sql.DB) ([]models.Category, *util.ApiError) {
 
 	return regions, nil
 }
+
+func DeleteRegion(database *sql.DB, id uint64) *util.ApiError {
+	existsRegion, err := db.ExistsRegionById(database, id)
+	if err != nil {
+		fmt.Println("Erro ao buscar região por id: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if !existsRegion {
+		return util.ThrowApiError("Essa região não existe!", http.StatusNotFound)
+	}
+
+	dinosWithRegion, err2 := db.FindDinoByFilter(database, models.DinoFilter{
+		RegionId: id,
+	})
+	if err2 != nil {
+		fmt.Println("Erro ao analisar uso de região: ", err2)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if len(dinosWithRegion) > 0 {
+		return util.ThrowApiError("Existem dinos usando esta região, sendo assim, ela não pode ser deletada!", http.StatusPreconditionFailed)
+	}
+
+	err3 := db.DeleteRegion(database, id)
+	if err3 != nil {
+		fmt.Println("Erro ao deletar região: ", err3)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	return nil
+}

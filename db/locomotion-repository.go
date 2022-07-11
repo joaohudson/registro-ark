@@ -16,6 +16,16 @@ func CreateLocomotion(db *sql.DB, locomotion models.CategoryRegistryRequest) err
 	return nil
 }
 
+func DeleteLocomotion(db *sql.DB, id uint64) error {
+	rows, err := db.Query("DELETE FROM locomotion WHERE id_locomotion = $1", id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+}
+
 func ListAllLocomotions(db *sql.DB) ([]models.Category, error) {
 	rows, err := db.Query("SELECT id_locomotion, name_locomotion FROM locomotion;")
 	if err != nil {

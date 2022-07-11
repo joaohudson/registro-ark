@@ -30,7 +30,9 @@ func main() {
 	router.Post("/api/dino/category/food", dinoController.CreateFood)
 	router.Delete("/api/dino/category/food", dinoController.DeleteFood)
 	router.Post("/api/dino/category/locomotion", dinoController.CreateLocomotion)
+	router.Delete("/api/dino/category/locomotion", dinoController.DeleteLocomotion)
 	router.Post("/api/dino/category/region", dinoController.CreateRegion)
+	router.Delete("/api/dino/category/region", dinoController.DeleteRegion)
 
 	//adm routes
 	admController := controller.NewAdmController(database)
