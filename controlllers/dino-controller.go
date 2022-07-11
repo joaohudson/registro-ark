@@ -9,6 +9,7 @@ import (
 
 	"github.com/joaohudson/registro-ark/models"
 	service "github.com/joaohudson/registro-ark/services"
+	"github.com/joaohudson/registro-ark/util"
 )
 
 type DinoController struct {
@@ -136,6 +137,19 @@ func (c *DinoController) CreateFood(response http.ResponseWriter, request *http.
 	if err2 != nil {
 		sendError(response, err2)
 		return
+	}
+}
+
+func (c *DinoController) DeleteFood(response http.ResponseWriter, request *http.Request) {
+	id, err := parseQueryParameterUint64(request, "id")
+	if err != nil {
+		fmt.Println("Erro no parse do id:", err)
+		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
+	}
+
+	err2 := service.DeleteFood(c.database, id)
+	if err2 != nil {
+		sendError(response, err2)
 	}
 }
 

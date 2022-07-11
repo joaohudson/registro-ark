@@ -28,6 +28,7 @@ func main() {
 	router.Get("/api/dinos", dinoController.FindDinoByFilter)
 	router.Get("/api/dino/categories", dinoController.DinoCategories)
 	router.Post("/api/dino/category/food", dinoController.CreateFood)
+	router.Delete("/api/dino/category/food", dinoController.DeleteFood)
 	router.Post("/api/dino/category/locomotion", dinoController.CreateLocomotion)
 	router.Post("/api/dino/category/region", dinoController.CreateRegion)
 

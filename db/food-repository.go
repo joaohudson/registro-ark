@@ -16,6 +16,16 @@ func CreateFood(db *sql.DB, food models.CategoryRegistryRequest) error {
 	return nil
 }
 
+func DeleteFood(db *sql.DB, id uint64) error {
+	rows, err := db.Query("DELETE FROM food WHERE id_food = $1", id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+}
+
 func ListAllFoods(db *sql.DB) ([]models.Category, error) {
 	rows, err := db.Query("SELECT id_food, name_food FROM food;")
 	if err != nil {
