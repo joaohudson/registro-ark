@@ -6,8 +6,16 @@ import (
 	"github.com/joaohudson/registro-ark/models"
 )
 
-func CreateLocomotion(db *sql.DB, locomotion models.CategoryRegistryRequest) error {
-	rows, err := db.Query("INSERT INTO locomotion(name_locomotion) VALUES($1);", locomotion.Name)
+type LocomotionRepository struct {
+	database *sql.DB
+}
+
+func NewLocomotionRepository(database *sql.DB) *LocomotionRepository {
+	return &LocomotionRepository{database: database}
+}
+
+func (l *LocomotionRepository) CreateLocomotion(locomotion models.CategoryRegistryRequest) error {
+	rows, err := l.database.Query("INSERT INTO locomotion(name_locomotion) VALUES($1);", locomotion.Name)
 	if err != nil {
 		return err
 	}
@@ -16,8 +24,8 @@ func CreateLocomotion(db *sql.DB, locomotion models.CategoryRegistryRequest) err
 	return nil
 }
 
-func DeleteLocomotion(db *sql.DB, id uint64) error {
-	rows, err := db.Query("DELETE FROM locomotion WHERE id_locomotion = $1", id)
+func (l *LocomotionRepository) DeleteLocomotion(id uint64) error {
+	rows, err := l.database.Query("DELETE FROM locomotion WHERE id_locomotion = $1", id)
 	if err != nil {
 		return err
 	}
@@ -26,8 +34,8 @@ func DeleteLocomotion(db *sql.DB, id uint64) error {
 	return nil
 }
 
-func ListAllLocomotions(db *sql.DB) ([]models.Category, error) {
-	rows, err := db.Query("SELECT id_locomotion, name_locomotion FROM locomotion;")
+func (l *LocomotionRepository) ListAllLocomotions() ([]models.Category, error) {
+	rows, err := l.database.Query("SELECT id_locomotion, name_locomotion FROM locomotion;")
 	if err != nil {
 		return []models.Category{}, err
 	}
@@ -47,6 +55,6 @@ func ListAllLocomotions(db *sql.DB) ([]models.Category, error) {
 	return result, nil
 }
 
-func ExistsLocomotionById(db *sql.DB, id uint64) (bool, error) {
-	return existsCategoryById(db, "locomotion", id)
+func (l *LocomotionRepository) ExistsLocomotionById(id uint64) (bool, error) {
+	return existsCategoryById(l.database, "locomotion", id)
 }

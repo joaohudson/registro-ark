@@ -6,8 +6,16 @@ import (
 	"github.com/joaohudson/registro-ark/models"
 )
 
-func CreateRegion(db *sql.DB, region models.CategoryRegistryRequest) error {
-	rows, err := db.Query("INSERT INTO region(name_region) VALUES($1);", region.Name)
+type RegionRepository struct {
+	database *sql.DB
+}
+
+func NewRegionRepository(database *sql.DB) *RegionRepository {
+	return &RegionRepository{database: database}
+}
+
+func (r *RegionRepository) CreateRegion(region models.CategoryRegistryRequest) error {
+	rows, err := r.database.Query("INSERT INTO region(name_region) VALUES($1);", region.Name)
 	if err != nil {
 		return err
 	}
@@ -16,8 +24,8 @@ func CreateRegion(db *sql.DB, region models.CategoryRegistryRequest) error {
 	return nil
 }
 
-func DeleteRegion(db *sql.DB, id uint64) error {
-	rows, err := db.Query("DELETE FROM region WHERE id_region = $1", id)
+func (r *RegionRepository) DeleteRegion(id uint64) error {
+	rows, err := r.database.Query("DELETE FROM region WHERE id_region = $1", id)
 	if err != nil {
 		return err
 	}
@@ -26,8 +34,8 @@ func DeleteRegion(db *sql.DB, id uint64) error {
 	return nil
 }
 
-func ListAllRegions(db *sql.DB) ([]models.Category, error) {
-	rows, err := db.Query("SELECT id_region, name_region FROM region;")
+func (r *RegionRepository) ListAllRegions() ([]models.Category, error) {
+	rows, err := r.database.Query("SELECT id_region, name_region FROM region;")
 	if err != nil {
 		return []models.Category{}, err
 	}
@@ -47,6 +55,6 @@ func ListAllRegions(db *sql.DB) ([]models.Category, error) {
 	return result, nil
 }
 
-func ExistsRegionById(db *sql.DB, id uint64) (bool, error) {
-	return existsCategoryById(db, "region", id)
+func (r *RegionRepository) ExistsRegionById(id uint64) (bool, error) {
+	return existsCategoryById(r.database, "region", id)
 }

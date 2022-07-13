@@ -1,7 +1,6 @@
 package service
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -10,8 +9,17 @@ import (
 	"github.com/joaohudson/registro-ark/util"
 )
 
-func CreateFood(database *sql.DB, category models.CategoryRegistryRequest) *util.ApiError {
-	err := db.CreateFood(database, category)
+type FoodService struct {
+	foodRepo *db.FoodRepository
+	dinoRepo *db.DinoRepository
+}
+
+func NewFoodService(foodRepo *db.FoodRepository, dinoRepo *db.DinoRepository) *FoodService {
+	return &FoodService{foodRepo: foodRepo, dinoRepo: dinoRepo}
+}
+
+func (f *FoodService) CreateFood(category models.CategoryRegistryRequest) *util.ApiError {
+	err := f.foodRepo.CreateFood(category)
 	if err != nil {
 		fmt.Println("Erro ao criar novo tipo de alimentação no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -20,8 +28,8 @@ func CreateFood(database *sql.DB, category models.CategoryRegistryRequest) *util
 	return nil
 }
 
-func ListAllFoods(database *sql.DB) ([]models.Category, *util.ApiError) {
-	foods, err := db.ListAllFoods(database)
+func (f *FoodService) ListAllFoods() ([]models.Category, *util.ApiError) {
+	foods, err := f.foodRepo.ListAllFoods()
 	if err != nil {
 		fmt.Println("Erro ao listar tipos de alimentação: ", err)
 		return []models.Category{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -30,8 +38,8 @@ func ListAllFoods(database *sql.DB) ([]models.Category, *util.ApiError) {
 	return foods, nil
 }
 
-func DeleteFood(database *sql.DB, id uint64) *util.ApiError {
-	existsFood, err := db.ExistsFoodById(database, id)
+func (f *FoodService) DeleteFood(id uint64) *util.ApiError {
+	existsFood, err := f.foodRepo.ExistsFoodById(id)
 	if err != nil {
 		fmt.Println("Erro ao buscar alimentação por id: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -40,7 +48,7 @@ func DeleteFood(database *sql.DB, id uint64) *util.ApiError {
 		return util.ThrowApiError("Esse tipo de alimentação não existe!", http.StatusNotFound)
 	}
 
-	dinosWithFood, err2 := db.FindDinoByFilter(database, models.DinoFilter{
+	dinosWithFood, err2 := f.dinoRepo.FindDinoByFilter(models.DinoFilter{
 		FoodId: id,
 	})
 	if err2 != nil {
@@ -51,7 +59,7 @@ func DeleteFood(database *sql.DB, id uint64) *util.ApiError {
 		return util.ThrowApiError("Existem dinos usando este tipo de alimentação, sendo assim, ele não pode ser deletado!", http.StatusPreconditionFailed)
 	}
 
-	err3 := db.DeleteFood(database, id)
+	err3 := f.foodRepo.DeleteFood(id)
 	if err3 != nil {
 		fmt.Println("Erro ao deletar alimentação: ", err3)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)

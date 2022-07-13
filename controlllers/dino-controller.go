@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,11 +12,24 @@ import (
 )
 
 type DinoController struct {
-	database *sql.DB
+	dinoService       *service.DinoService
+	locomotionService *service.LocomotionService
+	regionService     *service.RegionService
+	foodService       *service.FoodService
 }
 
-func NewDinoController(database *sql.DB) *DinoController {
-	return &DinoController{database: database}
+func NewDinoController(
+	dinoService *service.DinoService,
+	locomotionService *service.LocomotionService,
+	regionService *service.RegionService,
+	foodService *service.FoodService) *DinoController {
+
+	return &DinoController{
+		dinoService:       dinoService,
+		locomotionService: locomotionService,
+		regionService:     regionService,
+		foodService:       foodService,
+	}
 }
 
 func (c *DinoController) FindDinoById(response http.ResponseWriter, request *http.Request) {
@@ -29,7 +41,7 @@ func (c *DinoController) FindDinoById(response http.ResponseWriter, request *htt
 		return
 	}
 
-	data, err2 := service.FindDinoById(c.database, id)
+	data, err2 := c.dinoService.FindDinoById(id)
 	if err2 != nil {
 		sendError(response, err2)
 		return
@@ -71,7 +83,7 @@ func (c *DinoController) FindDinoByFilter(response http.ResponseWriter, request 
 		Name:         name,
 	}
 
-	dinos, searchErr := service.FindDinoByFilter(c.database, filter)
+	dinos, searchErr := c.dinoService.FindDinoByFilter(filter)
 	if searchErr != nil {
 		sendError(response, searchErr)
 		return
@@ -93,7 +105,7 @@ func (c *DinoController) CreateLocomotion(response http.ResponseWriter, request 
 		return
 	}
 
-	err2 := service.CreateLocomotion(c.database, locomotion)
+	err2 := c.locomotionService.CreateLocomotion(locomotion)
 	if err2 != nil {
 		sendError(response, err2)
 		return
@@ -107,7 +119,7 @@ func (c *DinoController) DeleteLocomotion(response http.ResponseWriter, request 
 		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
 	}
 
-	err2 := service.DeleteLocomotion(c.database, id)
+	err2 := c.locomotionService.DeleteLocomotion(id)
 	if err2 != nil {
 		sendError(response, err2)
 	}
@@ -126,7 +138,7 @@ func (c *DinoController) CreateRegion(response http.ResponseWriter, request *htt
 		return
 	}
 
-	err2 := service.CreateRegion(c.database, region)
+	err2 := c.regionService.CreateRegion(region)
 	if err2 != nil {
 		sendError(response, err2)
 		return
@@ -140,7 +152,7 @@ func (c *DinoController) DeleteRegion(response http.ResponseWriter, request *htt
 		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
 	}
 
-	err2 := service.DeleteRegion(c.database, id)
+	err2 := c.regionService.DeleteRegion(id)
 	if err2 != nil {
 		sendError(response, err2)
 	}
@@ -159,7 +171,7 @@ func (c *DinoController) CreateFood(response http.ResponseWriter, request *http.
 		return
 	}
 
-	err2 := service.CreateFood(c.database, food)
+	err2 := c.foodService.CreateFood(food)
 	if err2 != nil {
 		sendError(response, err2)
 		return
@@ -173,7 +185,7 @@ func (c *DinoController) DeleteFood(response http.ResponseWriter, request *http.
 		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
 	}
 
-	err2 := service.DeleteFood(c.database, id)
+	err2 := c.foodService.DeleteFood(id)
 	if err2 != nil {
 		sendError(response, err2)
 	}
@@ -181,19 +193,19 @@ func (c *DinoController) DeleteFood(response http.ResponseWriter, request *http.
 
 func (c *DinoController) DinoCategories(response http.ResponseWriter, request *http.Request) {
 
-	regions, err := service.ListAllRegions(c.database)
+	regions, err := c.regionService.ListAllRegions()
 	if err != nil {
 		sendError(response, err)
 		return
 	}
 
-	locomotions, err2 := service.ListAllLocomotions(c.database)
+	locomotions, err2 := c.locomotionService.ListAllLocomotions()
 	if err2 != nil {
 		sendError(response, err2)
 		return
 	}
 
-	foods, err3 := service.ListAllFoods(c.database)
+	foods, err3 := c.foodService.ListAllFoods()
 	if err3 != nil {
 		sendError(response, err3)
 		return
@@ -219,7 +231,7 @@ func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.
 		return
 	}
 
-	err2 := service.CreateDino(c.database, dino)
+	err2 := c.dinoService.CreateDino(dino)
 	if err2 != nil {
 		sendError(response, err2)
 		return
@@ -235,7 +247,7 @@ func (c *DinoController) DeleteDino(response http.ResponseWriter, request *http.
 		return
 	}
 
-	err2 := service.DeleteDino(c.database, id)
+	err2 := c.dinoService.DeleteDino(id)
 
 	if err2 != nil {
 		sendError(response, err2)

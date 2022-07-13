@@ -7,7 +7,15 @@ import (
 	"github.com/joaohudson/registro-ark/models"
 )
 
-func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) error {
+type DinoRepository struct {
+	db *sql.DB
+}
+
+func NewDinoRepository(db *sql.DB) *DinoRepository {
+	return &DinoRepository{db: db}
+}
+
+func (r *DinoRepository) CreateDino(dino models.DinoRegistryRequest) error {
 
 	const admId = 1
 	now := time.Now()
@@ -17,7 +25,7 @@ func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) error {
 	dino(name_dino, id_food, id_locomotion, id_region, id_adm, dt_creation, utility_dino, training_dino)
 	VALUES($1, $2, $3, $4, $5, $6, $7, $8);`
 
-	rows, err := db.Query(query, dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, admId, now, dino.Utility, dino.Training)
+	rows, err := r.db.Query(query, dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, admId, now, dino.Utility, dino.Training)
 	if err != nil {
 
 		return err
@@ -27,7 +35,7 @@ func CreateDino(db *sql.DB, dino models.DinoRegistryRequest) error {
 	return nil
 }
 
-func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, error) {
+func (r *DinoRepository) FindDinoByFilter(filter models.DinoFilter) ([]models.Dino, error) {
 	const query = `SELECT 
 	d.id_dino,
 	d.name_dino, 
@@ -48,7 +56,7 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, erro
 	(d.id_food = $4 OR $4 = 0)
 	ORDER BY(d.name_dino) ASC;`
 
-	rows, err := db.Query(query, filter.Name, filter.RegionId, filter.LocomotionId, filter.FoodId)
+	rows, err := r.db.Query(query, filter.Name, filter.RegionId, filter.LocomotionId, filter.FoodId)
 	if err != nil {
 		return []models.Dino{}, err
 	}
@@ -68,7 +76,7 @@ func FindDinoByFilter(db *sql.DB, filter models.DinoFilter) ([]models.Dino, erro
 	return result, nil
 }
 
-func FindDinoById(db *sql.DB, id uint64) (*models.Dino, error) {
+func (r *DinoRepository) FindDinoById(id uint64) (*models.Dino, error) {
 	const query = `SELECT 
 	d.id_dino,
 	d.name_dino, 
@@ -84,7 +92,7 @@ func FindDinoById(db *sql.DB, id uint64) (*models.Dino, error) {
 	INNER JOIN food f ON d.id_food = f.id_food 
 	WHERE d.id_dino = $1;`
 
-	rows, err := db.Query(query, id)
+	rows, err := r.db.Query(query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -103,8 +111,8 @@ func FindDinoById(db *sql.DB, id uint64) (*models.Dino, error) {
 	return &dino, nil
 }
 
-func DeleteDino(db *sql.DB, id uint64) error {
-	rows, err := db.Query("DELETE FROM dino WHERE id_dino = $1;", id)
+func (r *DinoRepository) DeleteDino(id uint64) error {
+	rows, err := r.db.Query("DELETE FROM dino WHERE id_dino = $1;", id)
 	if err != nil {
 		return err
 	}
@@ -113,8 +121,8 @@ func DeleteDino(db *sql.DB, id uint64) error {
 	return nil
 }
 
-func ExistsDinoById(db *sql.DB, id uint64) (bool, error) {
-	rows, err := db.Query("SELECT * FROM dino WHERE id_dino = $1;", id)
+func (r *DinoRepository) ExistsDinoById(id uint64) (bool, error) {
+	rows, err := r.db.Query("SELECT * FROM dino WHERE id_dino = $1;", id)
 	if err != nil {
 		return false, err
 	}
@@ -123,8 +131,8 @@ func ExistsDinoById(db *sql.DB, id uint64) (bool, error) {
 	return rows.Next(), nil
 }
 
-func ExistsDinoByName(db *sql.DB, dinoName string) (bool, error) {
-	rows, err := db.Query("SELECT * FROM dino WHERE name_dino = $1;", dinoName)
+func (r *DinoRepository) ExistsDinoByName(dinoName string) (bool, error) {
+	rows, err := r.db.Query("SELECT * FROM dino WHERE name_dino = $1;", dinoName)
 	if err != nil {
 		return false, err
 	}

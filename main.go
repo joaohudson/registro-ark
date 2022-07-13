@@ -8,6 +8,7 @@ import (
 
 	controller "github.com/joaohudson/registro-ark/controlllers"
 	"github.com/joaohudson/registro-ark/db"
+	service "github.com/joaohudson/registro-ark/services"
 )
 
 func main() {
@@ -20,8 +21,22 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("/*", fs)
 
-	//dino routes
-	dinoController := controller.NewDinoController(database)
+	//repositórios
+	dinoRepo := db.NewDinoRepository(database)
+	locomotionRepo := db.NewLocomotionRepository(database)
+	regionRepo := db.NewRegionRepository(database)
+	foodRepo := db.NewFoodRepository(database)
+
+	//services
+	dinoService := service.NewDinoService(dinoRepo, locomotionRepo, regionRepo, foodRepo)
+	locomotionService := service.NewLocomotionService(locomotionRepo, dinoRepo)
+	regionService := service.NewRegionService(regionRepo, dinoRepo)
+	foodService := service.NewFoodService(foodRepo, dinoRepo)
+
+	//controller
+	dinoController := controller.NewDinoController(dinoService, locomotionService, regionService, foodService)
+
+	//rotas
 	router.Post("/api/dino", dinoController.CreateDino)
 	router.Delete("/api/dino", dinoController.DeleteDino)
 	router.Get("/api/dino", dinoController.FindDinoById)

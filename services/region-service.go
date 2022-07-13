@@ -1,7 +1,6 @@
 package service
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -10,8 +9,17 @@ import (
 	"github.com/joaohudson/registro-ark/util"
 )
 
-func CreateRegion(database *sql.DB, region models.CategoryRegistryRequest) *util.ApiError {
-	err := db.CreateRegion(database, region)
+type RegionService struct {
+	regionRepo *db.RegionRepository
+	dinoRepo   *db.DinoRepository
+}
+
+func NewRegionService(regionRepo *db.RegionRepository, dinoRepo *db.DinoRepository) *RegionService {
+	return &RegionService{regionRepo: regionRepo, dinoRepo: dinoRepo}
+}
+
+func (r *RegionService) CreateRegion(region models.CategoryRegistryRequest) *util.ApiError {
+	err := r.regionRepo.CreateRegion(region)
 	if err != nil {
 		fmt.Println("Erro ao criar novo tipo de alimentação no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -20,8 +28,8 @@ func CreateRegion(database *sql.DB, region models.CategoryRegistryRequest) *util
 	return nil
 }
 
-func ListAllRegions(database *sql.DB) ([]models.Category, *util.ApiError) {
-	regions, err := db.ListAllRegions(database)
+func (r *RegionService) ListAllRegions() ([]models.Category, *util.ApiError) {
+	regions, err := r.regionRepo.ListAllRegions()
 	if err != nil {
 		fmt.Println("Erro ao listar regiões: ", err)
 		return []models.Category{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -30,8 +38,8 @@ func ListAllRegions(database *sql.DB) ([]models.Category, *util.ApiError) {
 	return regions, nil
 }
 
-func DeleteRegion(database *sql.DB, id uint64) *util.ApiError {
-	existsRegion, err := db.ExistsRegionById(database, id)
+func (r *RegionService) DeleteRegion(id uint64) *util.ApiError {
+	existsRegion, err := r.regionRepo.ExistsRegionById(id)
 	if err != nil {
 		fmt.Println("Erro ao buscar região por id: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -40,7 +48,7 @@ func DeleteRegion(database *sql.DB, id uint64) *util.ApiError {
 		return util.ThrowApiError("Essa região não existe!", http.StatusNotFound)
 	}
 
-	dinosWithRegion, err2 := db.FindDinoByFilter(database, models.DinoFilter{
+	dinosWithRegion, err2 := r.dinoRepo.FindDinoByFilter(models.DinoFilter{
 		RegionId: id,
 	})
 	if err2 != nil {
@@ -51,7 +59,7 @@ func DeleteRegion(database *sql.DB, id uint64) *util.ApiError {
 		return util.ThrowApiError("Existem dinos usando esta região, sendo assim, ela não pode ser deletada!", http.StatusPreconditionFailed)
 	}
 
-	err3 := db.DeleteRegion(database, id)
+	err3 := r.regionRepo.DeleteRegion(id)
 	if err3 != nil {
 		fmt.Println("Erro ao deletar região: ", err3)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)

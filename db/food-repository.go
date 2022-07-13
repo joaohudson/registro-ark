@@ -6,8 +6,16 @@ import (
 	"github.com/joaohudson/registro-ark/models"
 )
 
-func CreateFood(db *sql.DB, food models.CategoryRegistryRequest) error {
-	rows, err := db.Query("INSERT INTO food(name_food) VALUES($1);", food.Name)
+type FoodRepository struct {
+	database *sql.DB
+}
+
+func NewFoodRepository(database *sql.DB) *FoodRepository {
+	return &FoodRepository{database: database}
+}
+
+func (f *FoodRepository) CreateFood(food models.CategoryRegistryRequest) error {
+	rows, err := f.database.Query("INSERT INTO food(name_food) VALUES($1);", food.Name)
 	if err != nil {
 		return err
 	}
@@ -16,8 +24,8 @@ func CreateFood(db *sql.DB, food models.CategoryRegistryRequest) error {
 	return nil
 }
 
-func DeleteFood(db *sql.DB, id uint64) error {
-	rows, err := db.Query("DELETE FROM food WHERE id_food = $1", id)
+func (f *FoodRepository) DeleteFood(id uint64) error {
+	rows, err := f.database.Query("DELETE FROM food WHERE id_food = $1", id)
 	if err != nil {
 		return err
 	}
@@ -26,8 +34,8 @@ func DeleteFood(db *sql.DB, id uint64) error {
 	return nil
 }
 
-func ListAllFoods(db *sql.DB) ([]models.Category, error) {
-	rows, err := db.Query("SELECT id_food, name_food FROM food;")
+func (f *FoodRepository) ListAllFoods() ([]models.Category, error) {
+	rows, err := f.database.Query("SELECT id_food, name_food FROM food;")
 	if err != nil {
 		return []models.Category{}, err
 	}
@@ -47,6 +55,6 @@ func ListAllFoods(db *sql.DB) ([]models.Category, error) {
 	return result, nil
 }
 
-func ExistsFoodById(db *sql.DB, id uint64) (bool, error) {
-	return existsCategoryById(db, "food", id)
+func (f *FoodRepository) ExistsFoodById(id uint64) (bool, error) {
+	return existsCategoryById(f.database, "food", id)
 }
