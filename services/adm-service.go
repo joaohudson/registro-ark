@@ -18,6 +18,21 @@ func NewAdmService(admRepo *db.AdmRepository) *AdmService {
 }
 
 func (a *AdmService) CreateAdm(adm models.AdmRegistryRequest) *util.ApiError {
+	nameLen := len(adm.Name)
+	if nameLen > util.MaxNameAdm {
+		message := fmt.Sprintf("Nome do administrador muito longo! O tamanho máximo permitido é de %v caracteres.", util.MaxNameAdm)
+		return util.ThrowApiError(message, http.StatusBadRequest)
+	} else if nameLen == 0 {
+		return util.ThrowApiError("Informe o nome do administrador!", http.StatusBadRequest)
+	}
+
+	passwordLen := len(adm.Password)
+	if passwordLen > util.MaxNameAdm {
+		message := fmt.Sprintf("Senha do administrador muito longa! O tamanho máximo permitido é de %v caracteres.", util.MaxPasswordAdm)
+		return util.ThrowApiError(message, http.StatusBadRequest)
+	} else if passwordLen == 0 {
+		return util.ThrowApiError("Informe a senha do administrador!", http.StatusBadRequest)
+	}
 
 	existsAdm, err := a.admRepo.ExistsAdmByName(adm.Name)
 	if err != nil {
