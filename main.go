@@ -26,17 +26,20 @@ func main() {
 	locomotionRepo := db.NewLocomotionRepository(database)
 	regionRepo := db.NewRegionRepository(database)
 	foodRepo := db.NewFoodRepository(database)
+	admRepo := db.NewAdmRepository(database)
 
 	//services
 	dinoService := service.NewDinoService(dinoRepo, locomotionRepo, regionRepo, foodRepo)
 	locomotionService := service.NewLocomotionService(locomotionRepo, dinoRepo)
 	regionService := service.NewRegionService(regionRepo, dinoRepo)
 	foodService := service.NewFoodService(foodRepo, dinoRepo)
+	admService := service.NewAdmService(admRepo)
 
-	//controller
+	//controllers
 	dinoController := controller.NewDinoController(dinoService, locomotionService, regionService, foodService)
+	admController := controller.NewAdmController(admService)
 
-	//rotas
+	//rotas públicas
 	router.Post("/api/dino", dinoController.CreateDino)
 	router.Delete("/api/dino", dinoController.DeleteDino)
 	router.Get("/api/dino", dinoController.FindDinoById)
@@ -49,8 +52,7 @@ func main() {
 	router.Post("/api/dino/category/region", dinoController.CreateRegion)
 	router.Delete("/api/dino/category/region", dinoController.DeleteRegion)
 
-	//adm routes
-	admController := controller.NewAdmController(database)
+	//rotas privadas
 	router.Post("/api/adm", admController.CreateAdm)
 
 	err := http.ListenAndServe(":8081", router)

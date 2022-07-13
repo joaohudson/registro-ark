@@ -1,7 +1,6 @@
 package service
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -10,9 +9,17 @@ import (
 	"github.com/joaohudson/registro-ark/util"
 )
 
-func CreateAdm(database *sql.DB, adm models.AdmRegistryRequest) *util.ApiError {
+type AdmService struct {
+	admRepo *db.AdmRepository
+}
 
-	existsAdm, err := db.ExistsAdmByName(database, adm.Name)
+func NewAdmService(admRepo *db.AdmRepository) *AdmService {
+	return &AdmService{admRepo: admRepo}
+}
+
+func (a *AdmService) CreateAdm(adm models.AdmRegistryRequest) *util.ApiError {
+
+	existsAdm, err := a.admRepo.ExistsAdmByName(adm.Name)
 	if err != nil {
 		fmt.Println("Erro ao buscar adm por nome: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -21,7 +28,7 @@ func CreateAdm(database *sql.DB, adm models.AdmRegistryRequest) *util.ApiError {
 		return util.ThrowApiError("Já existe um administrador com este nome!", http.StatusPreconditionFailed)
 	}
 
-	err2 := db.CreateAdm(database, adm)
+	err2 := a.admRepo.CreateAdm(adm)
 	if err2 != nil {
 		fmt.Println("Erro ao criar conta de adminstrador: ", err2)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)

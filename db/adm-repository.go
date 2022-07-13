@@ -6,13 +6,21 @@ import (
 	"github.com/joaohudson/registro-ark/models"
 )
 
-func CreateAdm(db *sql.DB, adm models.AdmRegistryRequest) error {
+type AdmRepository struct {
+	database *sql.DB
+}
+
+func NewAdmRepository(database *sql.DB) *AdmRepository {
+	return &AdmRepository{database: database}
+}
+
+func (a *AdmRepository) CreateAdm(adm models.AdmRegistryRequest) error {
 	const query = `
 		INSERT INTO 
 		adm(name_adm, password_adm, permission_manager_adm, permission_manager_category, permission_manager_dino)
 		VALUES($1, $2, $3, $4, $5);
 	`
-	rows, err := db.Query(query, adm.Name, adm.Password, adm.PermissionManagerAdm, adm.PermissionManagerCategory, adm.PermissionManagerDino)
+	rows, err := a.database.Query(query, adm.Name, adm.Password, adm.PermissionManagerAdm, adm.PermissionManagerCategory, adm.PermissionManagerDino)
 	if err != nil {
 		return err
 	}
@@ -21,8 +29,8 @@ func CreateAdm(db *sql.DB, adm models.AdmRegistryRequest) error {
 	return nil
 }
 
-func ExistsAdmByName(db *sql.DB, name string) (bool, error) {
-	rows, err := db.Query("SELECT * FROM adm WHERE name_adm = $1;", name)
+func (a *AdmRepository) ExistsAdmByName(name string) (bool, error) {
+	rows, err := a.database.Query("SELECT * FROM adm WHERE name_adm = $1;", name)
 	if err != nil {
 		return false, err
 	}

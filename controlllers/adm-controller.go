@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -10,11 +9,11 @@ import (
 )
 
 type AdmController struct {
-	database *sql.DB
+	admService *service.AdmService
 }
 
-func NewAdmController(database *sql.DB) *AdmController {
-	return &AdmController{database: database}
+func NewAdmController(admService *service.AdmService) *AdmController {
+	return &AdmController{admService: admService}
 }
 
 func (a *AdmController) CreateAdm(response http.ResponseWriter, request *http.Request) {
@@ -27,7 +26,7 @@ func (a *AdmController) CreateAdm(response http.ResponseWriter, request *http.Re
 		return
 	}
 
-	err2 := service.CreateAdm(a.database, adm)
+	err2 := a.admService.CreateAdm(adm)
 	if err2 != nil {
 		sendError(response, err2)
 		return
