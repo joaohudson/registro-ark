@@ -31,6 +31,26 @@ func NewDinoService(
 
 func (s *DinoService) CreateDino(dino models.DinoRegistryRequest) *util.ApiError {
 
+	nameLen := len(dino.Name)
+	if nameLen > util.MaxDinoName {
+		message := fmt.Sprintf("Nome do dino muito longo!\nO tamanho máximo permitido é de %v caracteres.", util.MaxDinoName)
+		return util.ThrowApiError(message, http.StatusBadRequest)
+	} else if nameLen == 0 {
+		return util.ThrowApiError("Informe o nome do dino!", http.StatusBadRequest)
+	}
+
+	utilityLen := len(dino.Utility)
+	if utilityLen > util.MaxDinoUtility {
+		message := fmt.Sprintf("Utilidade do dino muito longa!\nO tamanho máximo permitido é de %v caracteres.", util.MaxDinoUtility)
+		return util.ThrowApiError(message, http.StatusBadRequest)
+	} else if utilityLen == 0 {
+		return util.ThrowApiError("Informe a utilidade do dino!", http.StatusBadRequest)
+	}
+
+	if len(dino.Training) == 0 {
+		return util.ThrowApiError("Informe a descrição do dino!", http.StatusBadRequest)
+	}
+
 	existsDino, err := s.dinoRepo.ExistsDinoByName(dino.Name)
 	if err != nil {
 		fmt.Println("Erro ao verificar dino por nome: ", err)
