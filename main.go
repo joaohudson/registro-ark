@@ -34,26 +34,29 @@ func main() {
 	regionService := service.NewRegionService(regionRepo, dinoRepo)
 	foodService := service.NewFoodService(foodRepo, dinoRepo)
 	admService := service.NewAdmService(admRepo)
+	loginService := service.NewLoginService(admRepo)
 
 	//controllers
-	dinoController := controller.NewDinoController(dinoService, locomotionService, regionService, foodService)
-	admController := controller.NewAdmController(admService)
+	dinoController := controller.NewDinoController(dinoService, locomotionService, regionService, foodService, loginService)
+	admController := controller.NewAdmController(admService, loginService)
+	loginController := controller.NewLoginController(loginService)
 
 	//rotas públicas
-	router.Post("/api/dino", dinoController.CreateDino)
-	router.Delete("/api/dino", dinoController.DeleteDino)
+	router.Post("/api/login", loginController.Login)
 	router.Get("/api/dino", dinoController.FindDinoById)
 	router.Get("/api/dinos", dinoController.FindDinoByFilter)
 	router.Get("/api/dino/categories", dinoController.DinoCategories)
+
+	//rotas privadas
+	router.Post("/api/dino", dinoController.CreateDino)
+	router.Delete("/api/dino", dinoController.DeleteDino)
+	router.Post("/api/adm", admController.CreateAdm)
 	router.Post("/api/dino/category/food", dinoController.CreateFood)
 	router.Delete("/api/dino/category/food", dinoController.DeleteFood)
 	router.Post("/api/dino/category/locomotion", dinoController.CreateLocomotion)
 	router.Delete("/api/dino/category/locomotion", dinoController.DeleteLocomotion)
 	router.Post("/api/dino/category/region", dinoController.CreateRegion)
 	router.Delete("/api/dino/category/region", dinoController.DeleteRegion)
-
-	//rotas privadas
-	router.Post("/api/adm", admController.CreateAdm)
 
 	err := http.ListenAndServe(":8081", router)
 	if err != nil {

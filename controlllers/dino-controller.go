@@ -16,19 +16,22 @@ type DinoController struct {
 	locomotionService *service.LocomotionService
 	regionService     *service.RegionService
 	foodService       *service.FoodService
+	loginService      *service.LoginService
 }
 
 func NewDinoController(
 	dinoService *service.DinoService,
 	locomotionService *service.LocomotionService,
 	regionService *service.RegionService,
-	foodService *service.FoodService) *DinoController {
+	foodService *service.FoodService,
+	loginService *service.LoginService) *DinoController {
 
 	return &DinoController{
 		dinoService:       dinoService,
 		locomotionService: locomotionService,
 		regionService:     regionService,
 		foodService:       foodService,
+		loginService:      loginService,
 	}
 }
 
@@ -94,100 +97,139 @@ func (c *DinoController) FindDinoByFilter(response http.ResponseWriter, request 
 
 func (c *DinoController) CreateLocomotion(response http.ResponseWriter, request *http.Request) {
 
+	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
 	decoder := json.NewDecoder(request.Body)
 
 	var locomotion models.CategoryRegistryRequest
-	err := decoder.Decode(&locomotion)
-	if err != nil {
-		fmt.Println("Erro ao fazer parse da locomoção: ", err)
+	err2 := decoder.Decode(&locomotion)
+	if err2 != nil {
+		fmt.Println("Erro ao fazer parse da locomoção: ", err2)
 		response.WriteHeader(http.StatusBadRequest)
 		response.Write([]byte("Locomoção inválida!"))
 		return
 	}
 
-	err2 := c.locomotionService.CreateLocomotion(locomotion)
-	if err2 != nil {
-		sendError(response, err2)
+	err3 := c.locomotionService.CreateLocomotion(locomotion)
+	if err3 != nil {
+		sendError(response, err3)
 		return
 	}
 }
 
 func (c *DinoController) DeleteLocomotion(response http.ResponseWriter, request *http.Request) {
-	id, err := parseQueryParameterUint64(request, "id")
+
+	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
 	if err != nil {
-		fmt.Println("Erro no parse do id:", err)
+		sendError(response, err)
+		return
+	}
+
+	id, err2 := parseQueryParameterUint64(request, "id")
+	if err2 != nil {
+		fmt.Println("Erro no parse do id:", err2)
 		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
 	}
 
-	err2 := c.locomotionService.DeleteLocomotion(id)
-	if err2 != nil {
-		sendError(response, err2)
+	err3 := c.locomotionService.DeleteLocomotion(id)
+	if err3 != nil {
+		sendError(response, err3)
 	}
 }
 
 func (c *DinoController) CreateRegion(response http.ResponseWriter, request *http.Request) {
 
+	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
 	decoder := json.NewDecoder(request.Body)
 
 	var region models.CategoryRegistryRequest
-	err := decoder.Decode(&region)
-	if err != nil {
-		fmt.Println("Erro ao fazer parse da região: ", err)
+	err2 := decoder.Decode(&region)
+	if err2 != nil {
+		fmt.Println("Erro ao fazer parse da região: ", err2)
 		response.WriteHeader(http.StatusBadRequest)
 		response.Write([]byte("Região inválida!"))
 		return
 	}
 
-	err2 := c.regionService.CreateRegion(region)
-	if err2 != nil {
-		sendError(response, err2)
+	err3 := c.regionService.CreateRegion(region)
+	if err3 != nil {
+		sendError(response, err3)
 		return
 	}
 }
 
 func (c *DinoController) DeleteRegion(response http.ResponseWriter, request *http.Request) {
-	id, err := parseQueryParameterUint64(request, "id")
+
+	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
 	if err != nil {
-		fmt.Println("Erro no parse do id:", err)
+		sendError(response, err)
+		return
+	}
+
+	id, err2 := parseQueryParameterUint64(request, "id")
+	if err2 != nil {
+		fmt.Println("Erro no parse do id:", err2)
 		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
 	}
 
-	err2 := c.regionService.DeleteRegion(id)
-	if err2 != nil {
-		sendError(response, err2)
+	err3 := c.regionService.DeleteRegion(id)
+	if err3 != nil {
+		sendError(response, err3)
 	}
 }
 
 func (c *DinoController) CreateFood(response http.ResponseWriter, request *http.Request) {
 
+	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
 	decoder := json.NewDecoder(request.Body)
 
 	var food models.CategoryRegistryRequest
-	err := decoder.Decode(&food)
-	if err != nil {
-		fmt.Println("Erro ao fazer parse do tipo de alimentação: ", err)
+	err2 := decoder.Decode(&food)
+	if err2 != nil {
+		fmt.Println("Erro ao fazer parse do tipo de alimentação: ", err2)
 		response.WriteHeader(http.StatusBadRequest)
 		response.Write([]byte("Tipo de Alimentação inválido!"))
 		return
 	}
 
-	err2 := c.foodService.CreateFood(food)
-	if err2 != nil {
-		sendError(response, err2)
+	err3 := c.foodService.CreateFood(food)
+	if err3 != nil {
+		sendError(response, err3)
 		return
 	}
 }
 
 func (c *DinoController) DeleteFood(response http.ResponseWriter, request *http.Request) {
-	id, err := parseQueryParameterUint64(request, "id")
+
+	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
 	if err != nil {
-		fmt.Println("Erro no parse do id:", err)
+		sendError(response, err)
+		return
+	}
+
+	id, err2 := parseQueryParameterUint64(request, "id")
+	if err2 != nil {
+		fmt.Println("Erro no parse do id:", err2)
 		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
 	}
 
-	err2 := c.foodService.DeleteFood(id)
-	if err2 != nil {
-		sendError(response, err2)
+	err3 := c.foodService.DeleteFood(id)
+	if err3 != nil {
+		sendError(response, err3)
 	}
 }
 
@@ -221,36 +263,50 @@ func (c *DinoController) DinoCategories(response http.ResponseWriter, request *h
 }
 
 func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.Request) {
+
+	_, err := authenticate(request, c.loginService, PermissionManagerDino)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
 	var dino models.DinoRegistryRequest
 	decoder := json.NewDecoder(request.Body)
-	err := decoder.Decode(&dino)
-	if err != nil {
-		fmt.Println("Erro na criação de dino: ", err)
+	err2 := decoder.Decode(&dino)
+	if err2 != nil {
+		fmt.Println("Erro na criação de dino: ", err2)
 		response.WriteHeader(http.StatusBadRequest)
 		response.Write([]byte("Informações do dino inválidas!"))
 		return
 	}
 
-	err2 := c.dinoService.CreateDino(dino)
-	if err2 != nil {
-		sendError(response, err2)
+	err3 := c.dinoService.CreateDino(dino)
+	if err3 != nil {
+		sendError(response, err3)
 		return
 	}
 }
 
 func (c *DinoController) DeleteDino(response http.ResponseWriter, request *http.Request) {
-	id, err := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
+
+	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
 	if err != nil {
-		fmt.Println("Erro no parse do id: ", err)
+		sendError(response, err)
+		return
+	}
+
+	id, err2 := strconv.ParseUint(request.URL.Query().Get("id"), 10, 64)
+	if err2 != nil {
+		fmt.Println("Erro no parse do id: ", err2)
 		response.WriteHeader(http.StatusNotFound)
 		response.Write([]byte("Dino não encontrado!"))
 		return
 	}
 
-	err2 := c.dinoService.DeleteDino(id)
+	err3 := c.dinoService.DeleteDino(id)
 
-	if err2 != nil {
-		sendError(response, err2)
+	if err3 != nil {
+		sendError(response, err3)
 		return
 	}
 }
