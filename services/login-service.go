@@ -29,7 +29,7 @@ func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.Api
 		fmt.Println("Erro ao recuperar id do usuário no banco: ", err)
 		return "", util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	} else if clientId == 0 {
-		return "", util.ThrowApiError("Usuário ou senha inválidos!", http.StatusUnauthorized)
+		return "", util.ThrowApiError("Usuário ou senha inválidos!", http.StatusBadRequest)
 	}
 
 	cl := &claims{
