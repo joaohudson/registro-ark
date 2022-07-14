@@ -11,6 +11,9 @@ const dialog = (function(){
     messageDialog.appendChild(messageButton);
 
     exports.showMessage = (message) => {
+        if(!message)//Mensagem vazia é desnecessária, exemplo: redirect
+            return;
+
         messageP.innerText = message;
         messageDialog.showModal();
     };

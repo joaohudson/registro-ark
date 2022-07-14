@@ -12,53 +12,29 @@ const foodButton = document.getElementById('foodButton');
 
 async function postLocomotion(name){
     const body = JSON.stringify({name});
-    const response = await fetch('/api/dino/category/locomotion', {method: 'POST', body: body});
-
-    if(!response.ok){
-        throw await response.text();
-    }
+    return await adminFetch('/api/dino/category/locomotion', {method: 'POST', body});
 }
 
 async function deleteLocomotion(id){
-    const response = await fetch('/api/dino/category/locomotion?id=' + id, {method: 'DELETE'});
-
-    if(!response.ok){
-        throw await response.text();
-    }
+    return await adminFetch('/api/dino/category/locomotion?id=' + id, {method: 'DELETE'});
 }
 
 async function postRegion(name){
     const body = JSON.stringify({name});
-    const response = await fetch('/api/dino/category/region', {method: 'POST', body: body});
-
-    if(!response.ok){
-        throw await response.text();
-    }
+    return await adminFetch('/api/dino/category/region', {method: 'POST', body});
 }
 
 async function deleteRegion(id){
-    const response = await fetch('/api/dino/category/region?id=' + id, {method: 'DELETE'});
-
-    if(!response.ok){
-        throw await response.text();
-    }
+    return await adminFetch('/api/dino/category/region?id=' + id, {method: 'DELETE'});
 }
 
 async function postFood(name){
     const body = JSON.stringify({name});
-    const response = await fetch('/api/dino/category/food', {method: 'POST', body: body});
-
-    if(!response.ok){
-        throw await response.text();
-    }
+    return await adminFetch('/api/dino/category/food', {method: 'POST', body});
 }
 
 async function deleteFood(id){
-    const response = await fetch('/api/dino/category/food?id=' + id, {method: 'DELETE'});
-
-    if(!response.ok){
-        throw await response.text();
-    }
+    return adminFetch('/api/dino/category/food?id=' + id, {method: 'DELETE'});
 }
 
 async function fetchCategories(){

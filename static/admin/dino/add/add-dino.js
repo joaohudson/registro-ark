@@ -17,11 +17,7 @@ async function fetchCategories(){
 }
 
 async function postDino(dino){
-    const response = await fetch('/api/dino', {method: 'POST', body: JSON.stringify(dino)});
-
-    if(!response.ok){
-        throw await response.text();
-    }
+    return adminFetch('/api/dino', {method: 'POST', body: JSON.stringify(dino)});
 }
 
 async function createDino(){
