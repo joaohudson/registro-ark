@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/joaohudson/registro-ark/db"
@@ -34,6 +35,9 @@ func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.Api
 
 	cl := &claims{
 		Id: clientId,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute).Unix(),
+		},
 	}
 
 	secret := GetJwtSecret()
