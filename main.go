@@ -42,7 +42,7 @@ func main() {
 	loginController := controller.NewLoginController(loginService)
 
 	//rotas públicas
-	router.Post("/api/login", loginController.Login)
+	router.Post("/api/adm/login", loginController.Login)
 	router.Get("/api/dino", dinoController.FindDinoById)
 	router.Get("/api/dinos", dinoController.FindDinoByFilter)
 	router.Get("/api/dino/categories", dinoController.DinoCategories)
