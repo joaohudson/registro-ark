@@ -37,7 +37,7 @@ async function loadData(){
         trTitle.appendChild(th);
     }
     const dateTh = document.createElement('th');
-    dateTh.innerText = 'Criado Em';
+    dateTh.innerText = 'Adicionado Em';
     trTitle.appendChild(dateTh);
     const actionsTh = document.createElement('th');
     actionsTh.innerText = 'Ações';
