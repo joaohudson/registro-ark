@@ -6,6 +6,10 @@ async function deleteDino(id){
     return await adminFetch('/api/dino?id='+id, {method: 'DELETE'});
 }
 
+function formatDate(dateStr){
+    return dateStr.substring(0, 19).replaceAll('-', '/').replaceAll('T', ' ');
+}
+
 async function loadData(){
     let data;
     try{
@@ -32,6 +36,9 @@ async function loadData(){
         th.innerText = f.label;
         trTitle.appendChild(th);
     }
+    const dateTh = document.createElement('th');
+    dateTh.innerText = 'Criado Em';
+    trTitle.appendChild(dateTh);
     const actionsTh = document.createElement('th');
     actionsTh.innerText = 'Ações';
     trTitle.appendChild(actionsTh);
@@ -45,6 +52,10 @@ async function loadData(){
             tr.appendChild(td);
         }
         table.appendChild(tr);
+
+        const dateTd = document.createElement('td');
+        dateTd.innerText = formatDate(obj.creationDate);
+        tr.appendChild(dateTd);
 
         const actionsTd = document.createElement('td');
         
