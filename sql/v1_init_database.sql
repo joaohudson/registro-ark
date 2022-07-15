@@ -34,3 +34,6 @@ CREATE TABLE dino(
     utility_dino VARCHAR(300) NOT NULL,
     training_dino TEXT NOT NULL
 );
+
+INSERT INTO adm(name_adm, password_adm, permission_manager_dino, permission_manager_category, permission_manager_adm)
+VALUES('Admin', 'Admin', true, true, true);
