@@ -3,8 +3,9 @@
     <head>
         <style>
             label{
+                font-size: 26px;
+                text-shadow: 1.8px 1px 0 #be823e;
                 font-weight: bold;
-                text-shadow: 1.2px 0 0 #aaa;
             }
             #infoDiv{
                 border: solid 1px black;
@@ -24,16 +25,29 @@
     <body>
         <h1 class="centered">Menu Principal</h1>
         <div id="infoDiv">
-            <div class="buttonLinkDiv">
+            <div class="centered">
+                <label id="nameLabel"></label>
+            </div>
+            <div style="margin-bottom: 30px;"></div>
+            <div id="addDinoRoute" class="buttonLinkDiv" hidden="true">
                 <a href="/admin/dino/add">Adicionar Dino</a>
             </div>
-            <div class="buttonLinkDiv">
+            <div id="listDinoRoute" class="buttonLinkDiv" hidden="true">
                 <a href="/admin/dino/list">Dinos Adicionados</a>
             </div>
-            <div class="buttonLinkDiv">
-                <a href="/admin/dino/category">Adicionar Categoria</a>
+            <div id="managerCategoryRoute" class="buttonLinkDiv" hidden="true">
+                <a href="/admin/dino/category">Gerenciar Categorias</a>
+            </div>
+            <div id="managerAdmRoute" class="buttonLinkDiv" hidden="true">
+                <a href="/admin/dino/category">Gerenciar Administradores</a>
+            </div>
+            <div style="margin-bottom: 30px;"></div>
+            <div class="centered">
+                <button id="logoutButton">Sair</button>
             </div>
         </div>
+        <script src="/dialog.js" type="text/javascript"></script>
+        <script src="admin-fetch.js" type="text/javascript"></script>
         <script src="admin.js" type="text/javascript"></script>
     </body>
 </html>
