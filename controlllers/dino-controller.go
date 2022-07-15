@@ -264,7 +264,7 @@ func (c *DinoController) DinoCategories(response http.ResponseWriter, request *h
 
 func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.Request) {
 
-	_, err := authenticate(request, c.loginService, PermissionManagerDino)
+	idAdm, err := authenticate(request, c.loginService, PermissionManagerDino)
 	if err != nil {
 		sendError(response, err)
 		return
@@ -280,7 +280,7 @@ func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.
 		return
 	}
 
-	err3 := c.dinoService.CreateDino(dino)
+	err3 := c.dinoService.CreateDino(idAdm, dino)
 	if err3 != nil {
 		sendError(response, err3)
 		return
@@ -289,7 +289,7 @@ func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.
 
 func (c *DinoController) DeleteDino(response http.ResponseWriter, request *http.Request) {
 
-	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
+	idAdm, err := authenticate(request, c.loginService, PermissionManagerCategory)
 	if err != nil {
 		sendError(response, err)
 		return
@@ -303,7 +303,7 @@ func (c *DinoController) DeleteDino(response http.ResponseWriter, request *http.
 		return
 	}
 
-	err3 := c.dinoService.DeleteDino(id)
+	err3 := c.dinoService.DeleteDino(idAdm, id)
 
 	if err3 != nil {
 		sendError(response, err3)

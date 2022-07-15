@@ -21,12 +21,6 @@ type AdmRegistryRequest struct {
 	PermissionManagerAdm      bool   `json:"permissionManagerAdm"`
 }
 
-type AdmPermission struct {
-	PermissionManagerDino     bool `json:"permissionManagerDino"`
-	PermissionManagerCategory bool `json:"permissionManagerCategory"`
-	PermissionManagerAdm      bool `json:"permissionManagerAdm"`
-}
-
 type DinoFilter struct {
 	Name         string
 	RegionId     uint64

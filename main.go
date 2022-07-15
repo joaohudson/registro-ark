@@ -29,7 +29,7 @@ func main() {
 	admRepo := db.NewAdmRepository(database)
 
 	//services
-	dinoService := service.NewDinoService(dinoRepo, locomotionRepo, regionRepo, foodRepo)
+	dinoService := service.NewDinoService(dinoRepo, locomotionRepo, regionRepo, foodRepo, admRepo)
 	locomotionService := service.NewLocomotionService(locomotionRepo, dinoRepo)
 	regionService := service.NewRegionService(regionRepo, dinoRepo)
 	foodService := service.NewFoodService(foodRepo, dinoRepo)

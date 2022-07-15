@@ -14,22 +14,26 @@ type DinoService struct {
 	locomotionRepo *db.LocomotionRepository
 	regionRepo     *db.RegionRepository
 	foodRepo       *db.FoodRepository
+	admRepo        *db.AdmRepository
 }
 
 func NewDinoService(
 	dinoRepo *db.DinoRepository,
 	locomotionRepo *db.LocomotionRepository,
 	regionRepo *db.RegionRepository,
-	foodRepo *db.FoodRepository) *DinoService {
+	foodRepo *db.FoodRepository,
+	admRepo *db.AdmRepository) *DinoService {
 
 	return &DinoService{
 		dinoRepo:       dinoRepo,
 		locomotionRepo: locomotionRepo,
 		regionRepo:     regionRepo,
-		foodRepo:       foodRepo}
+		foodRepo:       foodRepo,
+		admRepo:        admRepo,
+	}
 }
 
-func (s *DinoService) CreateDino(dino models.DinoRegistryRequest) *util.ApiError {
+func (s *DinoService) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) *util.ApiError {
 
 	nameLen := len(dino.Name)
 	if nameLen > util.MaxDinoName {
@@ -87,7 +91,7 @@ func (s *DinoService) CreateDino(dino models.DinoRegistryRequest) *util.ApiError
 		return util.ThrowApiError("Informe um tipo de alimentação válida!", http.StatusBadRequest)
 	}
 
-	err5 := s.dinoRepo.CreateDino(dino)
+	err5 := s.dinoRepo.CreateDino(idAdm, dino)
 
 	if err5 != nil {
 		fmt.Println("Erro ao inserir dados no banco: ", err5)
@@ -97,20 +101,30 @@ func (s *DinoService) CreateDino(dino models.DinoRegistryRequest) *util.ApiError
 	return nil
 }
 
-func (s *DinoService) DeleteDino(id uint64) *util.ApiError {
-	exists, err := s.dinoRepo.ExistsDinoById(id)
+func (s *DinoService) DeleteDino(idAdm uint64, id uint64) *util.ApiError {
+	dino, err := s.dinoRepo.FindDinoById(id)
 	if err != nil {
 		fmt.Println("Erro ao verificar dino por id: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
-	if !exists {
+	if dino == nil {
 		return util.ThrowApiError("Esse dino não existe!", http.StatusNotFound)
 	}
 
-	err2 := s.dinoRepo.DeleteDino(id)
+	mainAdmId, err2 := s.admRepo.GetMainAdmId()
 	if err2 != nil {
-		fmt.Println("Erro ao deletar dino: ", err2)
+		fmt.Println("Erro ao buscar adm principal: ", err2)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	if dino.IdAdm != idAdm && idAdm != mainAdmId {
+		return util.ThrowApiError("", http.StatusForbidden)
+	}
+
+	err3 := s.dinoRepo.DeleteDino(id)
+	if err3 != nil {
+		fmt.Println("Erro ao deletar dino: ", err3)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 

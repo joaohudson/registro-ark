@@ -36,7 +36,7 @@ func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.Api
 	cl := &claims{
 		Id: clientId,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute).Unix(),
+			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
 		},
 	}
 
@@ -69,13 +69,13 @@ func (l *LoginService) GetIdByToken(token string) (uint64, *util.ApiError) {
 }
 
 func (l *LoginService) CheckPermissionManagerDino(clientId uint64) *util.ApiError {
-	permissions, err := l.admRepo.GetAdmPermissionsById(clientId)
+	adm, err := l.admRepo.GetAdmById(clientId)
 	if err != nil {
 		fmt.Println("Erro ao recuperar permissões do administrador: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
-	if permissions.PermissionManagerDino {
+	if adm.PermissionManagerDino {
 		return nil
 	}
 
@@ -83,13 +83,13 @@ func (l *LoginService) CheckPermissionManagerDino(clientId uint64) *util.ApiErro
 }
 
 func (l *LoginService) CheckPermissionManagerCategory(clientId uint64) *util.ApiError {
-	permissions, err := l.admRepo.GetAdmPermissionsById(clientId)
+	adm, err := l.admRepo.GetAdmById(clientId)
 	if err != nil {
 		fmt.Println("Erro ao recuperar permissões do administrador: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
-	if permissions.PermissionManagerCategory {
+	if adm.PermissionManagerCategory {
 		return nil
 	}
 
@@ -97,13 +97,13 @@ func (l *LoginService) CheckPermissionManagerCategory(clientId uint64) *util.Api
 }
 
 func (l *LoginService) CheckPermissionManagerAdm(clientId uint64) *util.ApiError {
-	permissions, err := l.admRepo.GetAdmPermissionsById(clientId)
+	adm, err := l.admRepo.GetAdmById(clientId)
 	if err != nil {
 		fmt.Println("Erro ao recuperar permissões do administrador: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
-	if permissions.PermissionManagerAdm {
+	if adm.PermissionManagerAdm {
 		return nil
 	}
 

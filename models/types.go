@@ -4,6 +4,7 @@ import "time"
 
 type Dino struct {
 	Id           uint64    `json:"id"`
+	IdAdm        uint64    `json:"-"`
 	Name         string    `json:"name"`
 	Region       string    `json:"region"`
 	Locomotion   string    `json:"locomotion"`
@@ -16,4 +17,12 @@ type Dino struct {
 type Category struct {
 	Id   uint64 `json:"id"`
 	Name string `json:"name"`
+}
+
+type Adm struct {
+	Id                        uint64 `json:"id"`
+	Name                      string `json:"name"`
+	PermissionManagerDino     bool   `json:"permissionManagerDino"`
+	PermissionManagerCategory bool   `json:"permissionManagerCategory"`
+	PermissionManagerAdm      bool   `json:"permissionManagerAdm"`
 }

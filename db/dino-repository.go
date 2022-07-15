@@ -15,9 +15,7 @@ func NewDinoRepository(db *sql.DB) *DinoRepository {
 	return &DinoRepository{db: db}
 }
 
-func (r *DinoRepository) CreateDino(dino models.DinoRegistryRequest) error {
-
-	const admId = 1
+func (r *DinoRepository) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) error {
 	now := time.Now()
 
 	const query = `
@@ -25,7 +23,7 @@ func (r *DinoRepository) CreateDino(dino models.DinoRegistryRequest) error {
 	dino(name_dino, id_food, id_locomotion, id_region, id_adm, dt_creation, utility_dino, training_dino)
 	VALUES($1, $2, $3, $4, $5, $6, $7, $8);`
 
-	rows, err := r.db.Query(query, dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, admId, now, dino.Utility, dino.Training)
+	rows, err := r.db.Query(query, dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, idAdm, now, dino.Utility, dino.Training)
 	if err != nil {
 
 		return err
@@ -38,6 +36,7 @@ func (r *DinoRepository) CreateDino(dino models.DinoRegistryRequest) error {
 func (r *DinoRepository) FindDinoByFilter(filter models.DinoFilter) ([]models.Dino, error) {
 	const query = `SELECT 
 	d.id_dino,
+	d.id_adm,
 	d.name_dino, 
 	f.name_food, 
 	l.name_locomotion, 
@@ -66,7 +65,7 @@ func (r *DinoRepository) FindDinoByFilter(filter models.DinoFilter) ([]models.Di
 	var dino models.Dino
 
 	for rows.Next() {
-		err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
+		err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
 		if err2 != nil {
 			return []models.Dino{}, err2
 		}
@@ -79,6 +78,7 @@ func (r *DinoRepository) FindDinoByFilter(filter models.DinoFilter) ([]models.Di
 func (r *DinoRepository) FindDinoById(id uint64) (*models.Dino, error) {
 	const query = `SELECT 
 	d.id_dino,
+	d.id_adm,
 	d.name_dino, 
 	f.name_food, 
 	l.name_locomotion, 
@@ -102,7 +102,7 @@ func (r *DinoRepository) FindDinoById(id uint64) (*models.Dino, error) {
 	if !rows.Next() {
 		return nil, nil
 	}
-	err2 := rows.Scan(&dino.Id, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
+	err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
 
 	if err2 != nil {
 		return nil, err2

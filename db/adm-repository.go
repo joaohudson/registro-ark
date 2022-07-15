@@ -29,8 +29,8 @@ func (a *AdmRepository) CreateAdm(adm models.AdmRegistryRequest) error {
 	return nil
 }
 
-func (a *AdmRepository) GetAdmPermissionsById(id uint64) (*models.AdmPermission, error) {
-	rows, err := a.database.Query("SELECT permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm WHERE id_adm = $1;", id)
+func (a *AdmRepository) GetAdmById(id uint64) (*models.Adm, error) {
+	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm WHERE id_adm = $1;", id)
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +40,8 @@ func (a *AdmRepository) GetAdmPermissionsById(id uint64) (*models.AdmPermission,
 		return nil, nil
 	}
 
-	result := &models.AdmPermission{}
-	rows.Scan(&result.PermissionManagerDino, &result.PermissionManagerCategory, &result.PermissionManagerAdm)
+	result := &models.Adm{}
+	rows.Scan(&result.Id, &result.Name, &result.PermissionManagerDino, &result.PermissionManagerCategory, &result.PermissionManagerAdm)
 
 	return result, nil
 }
@@ -70,4 +70,20 @@ func (a *AdmRepository) ExistsAdmByName(name string) (bool, error) {
 	defer rows.Close()
 
 	return rows.Next(), nil
+}
+
+func (a *AdmRepository) GetMainAdmId() (uint64, error) {
+	rows, err := a.database.Query("SELECT id_adm FROM adm WHERE permission_manager_adm = true;")
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return 0, nil
+	}
+
+	var id uint64
+	rows.Scan(&id)
+	return id, nil
 }
