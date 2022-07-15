@@ -156,9 +156,23 @@ func (s *DinoService) FindDinoByFilter(filter models.DinoFilter) ([]models.Dino,
 
 func (s *DinoService) FindDinoByFilterForAdm(idAdm uint64, filter models.DinoFilter) ([]models.Dino, *util.ApiError) {
 
-	dinos, err := s.dinoRepo.FindDinoByFilterForAdm(idAdm, filter)
+	idMainAdm, err := s.admRepo.GetMainAdmId()
 	if err != nil {
-		fmt.Println("Erro ao buscar dinos por filtro (adm): ", err)
+		fmt.Println("Erro ao buscar adm principal: ", err)
+		return []models.Dino{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	var dinos []models.Dino
+	var err2 error
+
+	if idMainAdm == idAdm {
+		dinos, err2 = s.dinoRepo.FindDinoByFilterForMainAdm(filter)
+	} else {
+		dinos, err2 = s.dinoRepo.FindDinoByFilterForAdm(idAdm, filter)
+	}
+
+	if err2 != nil {
+		fmt.Println("Erro ao buscar dinos por filtro (adm): ", err2)
 		return []models.Dino{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
