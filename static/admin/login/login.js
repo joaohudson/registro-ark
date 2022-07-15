@@ -4,7 +4,7 @@ const nameField = document.getElementById('nameField');
 const passwordField = document.getElementById('passwordField');
 const loginButton = document.getElementById('loginButton');
 
-async function login(name, password){
+async function postLogin(name, password){
     const body = JSON.stringify({
         name,
         password
@@ -18,18 +18,25 @@ async function login(name, password){
     return await response.text();
 }
 
-loginButton.onclick = async () => {
-
+async function login(){
     const name = nameField.value;
     const password = passwordField.value;
     try{
-        const token = await login(name, password);
+        const token = await postLogin(name, password);
         localStorage.setItem('token', token);
         location.href = '/admin';
     }
     catch(e){
         dialog.showMessage(e);
         return;
+    }
+}
+
+loginButton.onclick = login;
+
+passwordField.onkeydown = async (e) => {
+    if(e.key == 'Enter'){
+        await login();
     }
 };
 
