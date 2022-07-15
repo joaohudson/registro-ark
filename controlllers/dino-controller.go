@@ -53,42 +53,69 @@ func (c *DinoController) FindDinoById(response http.ResponseWriter, request *htt
 	sendJson(response, data)
 }
 
-func (c *DinoController) FindDinoByFilter(response http.ResponseWriter, request *http.Request) {
-
+func parseDinoFilter(request *http.Request) (models.DinoFilter, *util.ApiError) {
 	region, err := parseQueryParameterUint64(request, "region")
 	if err != nil {
-		fmt.Println("Erro no parse do parâmetro: ", err)
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Região inválida!"))
-		return
+		fmt.Println("Erro no parse do parâmetro region: ", err)
+		return models.DinoFilter{}, util.ThrowApiError("Região inválida!", http.StatusBadRequest)
 	}
 
 	locomotion, err2 := parseQueryParameterUint64(request, "locomotion")
 	if err2 != nil {
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Locomoção inválida!"))
-		return
+		fmt.Println("Erro no parse do parâmetro locomotion: ", err2)
+		return models.DinoFilter{}, util.ThrowApiError("Locomoção inválida!", http.StatusBadRequest)
 	}
 
 	food, err3 := parseQueryParameterUint64(request, "food")
 	if err3 != nil {
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Tipo de alimentação inválida!"))
-		return
+		fmt.Println("Erro no parse do parâmetro food: ", err3)
+		return models.DinoFilter{}, util.ThrowApiError("Tipo de alimentação inválido!", http.StatusBadRequest)
 	}
 
 	name := request.URL.Query().Get("name")
 
-	filter := models.DinoFilter{
+	return models.DinoFilter{
 		RegionId:     region,
 		LocomotionId: locomotion,
 		FoodId:       food,
 		Name:         name,
+	}, nil
+}
+
+func (c *DinoController) FindDinoByFilter(response http.ResponseWriter, request *http.Request) {
+
+	filter, err := parseDinoFilter(request)
+	if err != nil {
+		sendError(response, err)
+		return
 	}
 
-	dinos, searchErr := c.dinoService.FindDinoByFilter(filter)
-	if searchErr != nil {
-		sendError(response, searchErr)
+	dinos, err2 := c.dinoService.FindDinoByFilter(filter)
+	if err2 != nil {
+		sendError(response, err2)
+		return
+	}
+
+	sendJson(response, dinos)
+}
+
+func (c *DinoController) FindDinoByFilterForAdm(response http.ResponseWriter, request *http.Request) {
+
+	idAdm, err := authenticate(request, c.loginService, PermissionManagerDino)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
+	filter, err := parseDinoFilter(request)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
+	dinos, err2 := c.dinoService.FindDinoByFilterForAdm(idAdm, filter)
+	if err2 != nil {
+		sendError(response, err2)
 		return
 	}
 

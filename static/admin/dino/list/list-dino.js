@@ -1,11 +1,5 @@
 async function fetchDinos(region = '', locomotion = '', food = '', name = ''){
-    const response = await fetch('/api/dinos?region=' + region + '&locomotion=' + locomotion + '&food=' + food + '&name=' + name);
-
-    if(!response.ok){
-        throw await response.text();
-    }
-
-    return await response.json()
+    return await adminFetch('/api/adm/dinos?region=' + region + '&locomotion=' + locomotion + '&food=' + food + '&name=' + name, {}, true);
 }
 
 async function deleteDino(id){
