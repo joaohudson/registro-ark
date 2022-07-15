@@ -51,3 +51,12 @@ func (a *AdmService) CreateAdm(adm models.AdmRegistryRequest) *util.ApiError {
 
 	return nil
 }
+
+func (a *AdmService) GetAdm(idAdm uint64) (*models.Adm, *util.ApiError) {
+	adm, err := a.admRepo.GetAdmById(idAdm)
+	if err != nil {
+		return nil, util.ThrowApiError("", http.StatusUnauthorized)
+	}
+
+	return adm, nil
+}
