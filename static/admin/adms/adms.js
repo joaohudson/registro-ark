@@ -107,11 +107,13 @@ function createButtons(adm, channel){
 
     const saveButton = document.createElement('button');
     saveButton.innerText = '💾';
+    saveButton.title = 'Salvar alterações';
     saveButton.disabled = true;
     buttonDiv.appendChild(saveButton);
     const cancelButton = document.createElement('button');
     cancelButton.disabled = true;
     cancelButton.innerText = '↩️';
+    cancelButton.title = 'Desfazer alterações';
     buttonDiv.appendChild(cancelButton);
 
 
