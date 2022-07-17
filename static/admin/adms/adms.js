@@ -36,11 +36,15 @@ async function loadData(){
         div.className = 'itemDiv';
         infoDiv.appendChild(div);
 
+        const channel = {
+            onmodified: () => {}
+        };
+
         div.appendChild(createLabelDiv(adm));
 
-        div.appendChild(createCheckButtons(adm));
+        div.appendChild(createCheckButtons(adm, channel));
 
-        div.appendChild(createButtons(adm));
+        div.appendChild(createButtons(adm, channel));
     }
 }
 
@@ -54,7 +58,7 @@ function createLabelDiv(adm){
     return labelDiv;
 }
 
-function createCheckButtons(adm){
+function createCheckButtons(adm, channel){
     const checkDiv = document.createElement("div");
     checkDiv.className = "centered";
 
@@ -67,20 +71,22 @@ function createCheckButtons(adm){
     permDinoCheck.disabled = adm.permissionManagerAdm;
     permDinoCheck.onclick = () => {
       adm.permissionManagerDino = permDinoCheck.checked;
+      channel.onmodified();
     };
     checkDiv.appendChild(permDinoCheck);
 
     const permCategory = document.createElement("label");
     permCategory.innerText = "Gerenciar Categoria";
     checkDiv.appendChild(permCategory);
-    const permiCategoryCheck = document.createElement("input");
-    permiCategoryCheck.type = "checkbox";
-    permiCategoryCheck.checked = adm.permissionManagerCategory;
-    permiCategoryCheck.disabled = adm.permissionManagerAdm;
-    permiCategoryCheck.onclick = () => {
-      adm.permissionManagerCategory = permiCategoryCheck.checked;
+    const permCategoryCheck = document.createElement("input");
+    permCategoryCheck.type = "checkbox";
+    permCategoryCheck.checked = adm.permissionManagerCategory;
+    permCategoryCheck.disabled = adm.permissionManagerAdm;
+    permCategoryCheck.onclick = () => {
+      adm.permissionManagerCategory = permCategoryCheck.checked;
+      channel.onmodified();
     };
-    checkDiv.appendChild(permiCategoryCheck);
+    checkDiv.appendChild(permCategoryCheck);
 
     const permAdmLabel = document.createElement("label");
     permAdmLabel.innerText = "Gerenciar Administrador";
@@ -94,16 +100,26 @@ function createCheckButtons(adm){
     return checkDiv;
 }
 
-function createButtons(adm){
+function createButtons(adm, channel){
     const buttonDiv = document.createElement('div');
     buttonDiv.className = 'buttonDiv';
     infoDiv.appendChild(buttonDiv);
 
     const saveButton = document.createElement('button');
     saveButton.innerText = '💾';
+    saveButton.disabled = true;
+    buttonDiv.appendChild(saveButton);
+    const cancelButton = document.createElement('button');
+    cancelButton.disabled = true;
+    cancelButton.innerText = '↩️';
+    buttonDiv.appendChild(cancelButton);
+
+
     saveButton.onclick = async () => {
         try{
             await putAdmPermission(adm);
+            saveButton.disabled = true;
+            cancelButton.disabled = true;
         }
         catch(e){
             dialog.showMessage(e);
@@ -111,12 +127,17 @@ function createButtons(adm){
         }
         
     }
-    buttonDiv.appendChild(saveButton);
 
-    const cancelButton = document.createElement('button');
-    cancelButton.innerText = '❌';
-    cancelButton.onclick = async () => await loadData();
-    buttonDiv.appendChild(cancelButton);
+    cancelButton.onclick = async () => {
+        await loadData();
+        saveButton.disabled = true;
+        cancelButton.disabled = true;
+    }
+
+    channel.onmodified = () => {
+        saveButton.disabled = false;
+        cancelButton.disabled = false;
+    };
 
     return buttonDiv;
 }
