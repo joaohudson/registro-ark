@@ -45,7 +45,7 @@ func (a *AdmRepository) PutPermissions(permissions models.AdmChangePermissionsRe
 }
 
 func (a *AdmRepository) GetAdms() ([]models.Adm, error) {
-	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm;")
+	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm ORDER BY id_adm DESC;")
 	if err != nil {
 		return []models.Adm{}, err
 	}
