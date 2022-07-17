@@ -52,6 +52,7 @@ func main() {
 	router.Delete("/api/dino", dinoController.DeleteDino)
 	router.Get("/api/adm/dinos", dinoController.FindDinoByFilterForAdm)
 	router.Post("/api/adm", admController.CreateAdm)
+	router.Put("/api/adm/permissions", admController.PutAdmPermissions)
 	router.Get("/api/adm", admController.GetAdm)
 	router.Get("/api/adms", admController.GetAdms)
 	router.Post("/api/dino/category/food", dinoController.CreateFood)

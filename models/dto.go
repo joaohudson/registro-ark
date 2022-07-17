@@ -38,3 +38,9 @@ type LoginRequest struct {
 	Name     string `json:"name"`
 	Password string `json:"password"`
 }
+
+type AdmChangePermissionsRequest struct {
+	Id                        uint64 `json:"id"`
+	PermissionManagerDino     bool   `json:"permissionManagerDino"`
+	PermissionManagerCategory bool   `json:"permissionManagerCategory"`
+}

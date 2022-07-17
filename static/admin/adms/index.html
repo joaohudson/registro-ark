@@ -2,41 +2,43 @@
 <html>
     <head>
         <style>
-            table{
-                width: 100%;
-            }
-            th{
-                background-color: #3a200293
-            }
-            table, td{
-                background-color: #753f023f;
-            }
-            th, td{
-                text-align: center;
-            }
-            tr:not(:first-child):hover{
-                background-color: #3a200293;
-                color: #be823e;
-                text-shadow: 1.2px 0 0 black;
-            }
             label{
+                margin-left: 15px;
+                font-size: 15px;
+                color: #be823e;
                 font-weight: bold;
-                text-shadow: 1.2px 0 0 #aaa;
             }
-            .actionButton{
-                background-color: transparent;
-                border: none;
-                margin-left: 5px;
-                text-align: center;
+            .itemDiv{
+                background-color: black;
+                width: fit-content;
+                border-color: black;
+                border-width: 1px;
+                margin-right: auto;
+                margin-left: auto;
+                margin-bottom: 15px;
             }
-            #itemsDiv{
-                margin: auto;
-                margin-top: 30px;
-                width: 60%;
+            .buttonDiv {
                 text-align: center;
                 align-items: center;
+                margin-left: auto;
+                margin-right: auto;
+                width: 80%;
+            }
+            .buttonDiv button{
+                background-color: transparent;
                 font-weight: bold;
-                text-shadow: 1.2px 0 0 #aaa;
+                margin-right: 5px;
+                margin-left: 5px;
+                margin-bottom: 5px;
+            }
+            #itemsDiv{
+                border: solid 1px black;
+                margin-left: auto;
+                margin-right: auto;
+                background-color:  #3a200293;
+                width: 60%;
+                padding-top: 20px;
+                padding-bottom: 20px;
             }
         </style>
         <title>Registro Ark - Admin</title>

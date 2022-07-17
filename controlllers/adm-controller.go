@@ -2,10 +2,12 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/joaohudson/registro-ark/models"
 	service "github.com/joaohudson/registro-ark/services"
+	"github.com/joaohudson/registro-ark/util"
 )
 
 type AdmController struct {
@@ -37,6 +39,29 @@ func (a *AdmController) CreateAdm(response http.ResponseWriter, request *http.Re
 	err3 := a.admService.CreateAdm(adm)
 	if err3 != nil {
 		sendError(response, err3)
+		return
+	}
+}
+
+func (a *AdmController) PutAdmPermissions(response http.ResponseWriter, request *http.Request) {
+	_, err := authenticate(request, a.loginService, PermissionManagerAdm)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
+	var permissions models.AdmChangePermissionsRequest
+	decoder := json.NewDecoder(request.Body)
+	err2 := decoder.Decode(&permissions)
+	if err2 != nil {
+		fmt.Println("Erro ao fazer parse das permissões: ", err2)
+		sendError(response, util.ThrowApiError("Não foi possível alterar as permissões do administrador! Recarregue a página e tente novamente.", http.StatusBadRequest))
+		return
+	}
+
+	err = a.admService.PutAdmPermissions(permissions)
+	if err != nil {
+		sendError(response, err)
 		return
 	}
 }

@@ -29,6 +29,21 @@ func (a *AdmRepository) CreateAdm(adm models.AdmRegistryRequest) error {
 	return nil
 }
 
+func (a *AdmRepository) PutPermissions(permissions models.AdmChangePermissionsRequest) error {
+	const query = `UPDATE adm SET
+	permission_manager_category = $1,
+	permission_manager_dino = $2
+	WHERE id_adm = $3`
+
+	rows, err := a.database.Query(query, permissions.PermissionManagerCategory, permissions.PermissionManagerDino, permissions.Id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+}
+
 func (a *AdmRepository) GetAdms() ([]models.Adm, error) {
 	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm;")
 	if err != nil {

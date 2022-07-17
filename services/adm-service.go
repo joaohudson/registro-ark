@@ -52,6 +52,27 @@ func (a *AdmService) CreateAdm(adm models.AdmRegistryRequest) *util.ApiError {
 	return nil
 }
 
+func (a *AdmService) PutAdmPermissions(permissions models.AdmChangePermissionsRequest) *util.ApiError {
+	adm, err := a.admRepo.GetAdmById(permissions.Id)
+	if err != nil {
+		fmt.Println("Erro ao recuperar dados do administrador: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if adm == nil {
+		return util.ThrowApiError("Este administrador não existe!", http.StatusNotFound)
+	}
+	if adm.PermissionManagerAdm {
+		return util.ThrowApiError("O administrador principal não pode ter suas permissões alteradas!", http.StatusPreconditionFailed)
+	}
+
+	err = a.admRepo.PutPermissions(permissions)
+	if err != nil {
+		fmt.Println("Erro ao modificar permissões de administrador: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	return nil
+}
+
 func (a *AdmService) GetAdm(idAdm uint64) (*models.Adm, *util.ApiError) {
 	adm, err := a.admRepo.GetAdmById(idAdm)
 	if err != nil {
@@ -62,16 +83,6 @@ func (a *AdmService) GetAdm(idAdm uint64) (*models.Adm, *util.ApiError) {
 }
 
 func (a *AdmService) GetAdms(idAdm uint64) ([]models.Adm, *util.ApiError) {
-	adm, err := a.admRepo.GetAdmById(idAdm)
-	if err != nil {
-		fmt.Println("Erro ao recuperar dados do administrador: ", err)
-		return []models.Adm{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
-	}
-	if adm == nil {
-		fmt.Println("Adm não encontrado!")
-		return []models.Adm{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
-	}
-
 	adms, err := a.admRepo.GetAdms()
 	if err != nil {
 		fmt.Println("Erro ao listar administradores: ", err)
