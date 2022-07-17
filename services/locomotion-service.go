@@ -19,6 +19,16 @@ func NewLocomotionService(locomotionRepo *db.LocomotionRepository, dinoRepo *db.
 }
 
 func (l *LocomotionService) CreateLocomotion(locomotion models.CategoryRegistryRequest) *util.ApiError {
+
+	existsLocomotion, err := l.locomotionRepo.ExistsLocomotionByName(locomotion.Name)
+	if err != nil {
+		fmt.Println("Erro ao buscar locomoção por nome: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if existsLocomotion {
+		return util.ThrowApiError("Essa locomoção já existe!", http.StatusPreconditionFailed)
+	}
+
 	nameLen := len(locomotion.Name)
 	if nameLen > util.MaxNameFood {
 		message := fmt.Sprintf("Nome da locomoção muito longo!\nO tamanho máximo permitido é de %v caracteres.", util.MaxNameLocomotion)
@@ -27,7 +37,7 @@ func (l *LocomotionService) CreateLocomotion(locomotion models.CategoryRegistryR
 		return util.ThrowApiError("Informe o nome da locomoção!", http.StatusBadRequest)
 	}
 
-	err := l.locomotionRepo.CreateLocomotion(locomotion)
+	err = l.locomotionRepo.CreateLocomotion(locomotion)
 	if err != nil {
 		fmt.Println("Erro ao criar locomoção no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)

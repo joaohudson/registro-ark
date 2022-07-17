@@ -19,6 +19,16 @@ func NewFoodService(foodRepo *db.FoodRepository, dinoRepo *db.DinoRepository) *F
 }
 
 func (f *FoodService) CreateFood(food models.CategoryRegistryRequest) *util.ApiError {
+
+	existsFood, err := f.foodRepo.ExistsFoodByName(food.Name)
+	if err != nil {
+		fmt.Println("Erro ao buscar tipo de alimentação por nome: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if existsFood {
+		return util.ThrowApiError("Esse tipo de alimentação já existe!", http.StatusPreconditionFailed)
+	}
+
 	nameLen := len(food.Name)
 	if nameLen > util.MaxNameFood {
 		message := fmt.Sprintf("Nome do tipo de alimentação muito longo!\nO tamanho máximo permitido é de %v caracteres.", util.MaxNameFood)
@@ -27,7 +37,7 @@ func (f *FoodService) CreateFood(food models.CategoryRegistryRequest) *util.ApiE
 		return util.ThrowApiError("Informe o nome do tipo de alimentação!", http.StatusBadRequest)
 	}
 
-	err := f.foodRepo.CreateFood(food)
+	err = f.foodRepo.CreateFood(food)
 	if err != nil {
 		fmt.Println("Erro ao criar novo tipo de alimentação no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)

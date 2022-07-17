@@ -58,3 +58,7 @@ func (r *RegionRepository) ListAllRegions() ([]models.Category, error) {
 func (r *RegionRepository) ExistsRegionById(id uint64) (bool, error) {
 	return existsCategoryById(r.database, "region", id)
 }
+
+func (r *RegionRepository) ExistsRegionByName(name string) (bool, error) {
+	return existsCategoryByName(r.database, "region", name)
+}

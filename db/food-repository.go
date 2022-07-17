@@ -58,3 +58,7 @@ func (f *FoodRepository) ListAllFoods() ([]models.Category, error) {
 func (f *FoodRepository) ExistsFoodById(id uint64) (bool, error) {
 	return existsCategoryById(f.database, "food", id)
 }
+
+func (f *FoodRepository) ExistsFoodByName(name string) (bool, error) {
+	return existsCategoryByName(f.database, "food", name)
+}

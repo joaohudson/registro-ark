@@ -58,3 +58,7 @@ func (l *LocomotionRepository) ListAllLocomotions() ([]models.Category, error) {
 func (l *LocomotionRepository) ExistsLocomotionById(id uint64) (bool, error) {
 	return existsCategoryById(l.database, "locomotion", id)
 }
+
+func (l *LocomotionRepository) ExistsLocomotionByName(name string) (bool, error) {
+	return existsCategoryByName(l.database, "locomotion", name)
+}

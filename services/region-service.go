@@ -19,6 +19,16 @@ func NewRegionService(regionRepo *db.RegionRepository, dinoRepo *db.DinoReposito
 }
 
 func (r *RegionService) CreateRegion(region models.CategoryRegistryRequest) *util.ApiError {
+
+	existsRegion, err := r.regionRepo.ExistsRegionByName(region.Name)
+	if err != nil {
+		fmt.Println("Erro ao buscar região por nome: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if existsRegion {
+		return util.ThrowApiError("Essa região já existe!", http.StatusPreconditionFailed)
+	}
+
 	nameLen := len(region.Name)
 	if nameLen > util.MaxNameFood {
 		message := fmt.Sprintf("Nome da região muito longo!\nO tamanho máximo permitido é de %v caracteres.", util.MaxNameRegion)
@@ -27,7 +37,7 @@ func (r *RegionService) CreateRegion(region models.CategoryRegistryRequest) *uti
 		return util.ThrowApiError("Informe o nome da região!", http.StatusBadRequest)
 	}
 
-	err := r.regionRepo.CreateRegion(region)
+	err = r.regionRepo.CreateRegion(region)
 	if err != nil {
 		fmt.Println("Erro ao criar novo tipo de alimentação no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
