@@ -29,6 +29,27 @@ func (a *AdmRepository) CreateAdm(adm models.AdmRegistryRequest) error {
 	return nil
 }
 
+func (a *AdmRepository) GetAdms() ([]models.Adm, error) {
+	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm;")
+	if err != nil {
+		return []models.Adm{}, err
+	}
+	defer rows.Close()
+
+	var adm models.Adm
+	result := []models.Adm{}
+
+	for rows.Next() {
+		err = rows.Scan(&adm.Id, &adm.Name, &adm.PermissionManagerDino, &adm.PermissionManagerCategory, &adm.PermissionManagerAdm)
+		if err != nil {
+			return []models.Adm{}, err
+		}
+		result = append(result, adm)
+	}
+
+	return result, nil
+}
+
 func (a *AdmRepository) GetAdmById(id uint64) (*models.Adm, error) {
 	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm WHERE id_adm = $1;", id)
 	if err != nil {

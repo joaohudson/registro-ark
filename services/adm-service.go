@@ -60,3 +60,23 @@ func (a *AdmService) GetAdm(idAdm uint64) (*models.Adm, *util.ApiError) {
 
 	return adm, nil
 }
+
+func (a *AdmService) GetAdms(idAdm uint64) ([]models.Adm, *util.ApiError) {
+	adm, err := a.admRepo.GetAdmById(idAdm)
+	if err != nil {
+		fmt.Println("Erro ao recuperar dados do administrador: ", err)
+		return []models.Adm{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if adm == nil {
+		fmt.Println("Adm não encontrado!")
+		return []models.Adm{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	adms, err := a.admRepo.GetAdms()
+	if err != nil {
+		fmt.Println("Erro ao listar administradores: ", err)
+		return []models.Adm{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	return adms, nil
+}

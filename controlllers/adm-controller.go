@@ -41,6 +41,22 @@ func (a *AdmController) CreateAdm(response http.ResponseWriter, request *http.Re
 	}
 }
 
+func (a *AdmController) GetAdms(response http.ResponseWriter, request *http.Request) {
+	idAdm, err := authenticate(request, a.loginService, PermissionManagerAdm)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
+	adms, err := a.admService.GetAdms(idAdm)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
+	sendJson(response, adms)
+}
+
 func (a *AdmController) GetAdm(response http.ResponseWriter, request *http.Request) {
 	idAdm, err := authenticate(request, a.loginService, PermissionManagerNone)
 	if err != nil {
