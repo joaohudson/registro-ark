@@ -2,6 +2,14 @@
 
 const infoDiv = document.getElementById('itemsDiv');
 
+//registro
+const userField = document.getElementById('userField');
+const passwordField = document.getElementById('passwordField');
+const confirmPasswordField = document.getElementById('confirmPasswordField');
+const singupButton = document.getElementById('singupButton');
+const managerDinoCheck = document.getElementById('managerDinoCheck');
+const managerCategoryCheck = document.getElementById('managerCategoryCheck');
+
 async function fetchAdms(){
     return await adminFetch('/api/adms', {}, true);
 }
@@ -11,11 +19,44 @@ async function putAdmPermission(request){
     return await adminFetch('/api/adm/permissions', {method: 'PUT', body});
 }
 
+async function postAdm(request){
+    const body = JSON.stringify(request);
+    return await adminFetch('/api/adm', {method: 'POST', body});
+}
+
 async function main(){
     await loadData();
 }
 
 main();
+
+singupButton.onclick = async () => {
+    try{
+        if(passwordField.value != confirmPasswordField.value){
+            dialog.showMessage('A senha deve ser igual a confirmada!');
+            return;
+        }
+
+        const admRequest = {
+            name: userField.value,
+            password: passwordField.value,
+            permissionManagerDino: managerDinoCheck.checked,
+            permissionManagerCategory: managerCategoryCheck.checked
+        };
+
+        await postAdm(admRequest);
+        userField.value = '';
+        passwordField.value = '';
+        confirmPasswordField.value = '';
+        managerDinoCheck.checked = false;
+        managerCategoryCheck.checked = false;
+        await loadData();
+    }
+    catch(e){
+        dialog.showMessage(e);
+        return;
+    }
+};
 
 
 async function loadData(){

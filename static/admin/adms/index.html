@@ -35,7 +35,21 @@
             .buttonDiv button:disabled{
                 display: none;
             }
-            #itemsDiv{
+            .fields{
+                align-items: center;
+                text-align: center;
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            .fields label{
+                color: black;
+                text-shadow: 1.8px 1px 0 #be823e;
+            }
+            .fields input{
+                background-color: black;
+                color: #be823e;
+            }
+            .panel{
                 border: solid 1px black;
                 margin-left: auto;
                 margin-right: auto;
@@ -52,7 +66,41 @@
     </head>
     <body>
         <h1 class="centered">Administradores</h1>
-        <div id="itemsDiv"></div>
+        <div class="panel">
+            <div class="fields">
+                <div>
+                    <label>Usuário: </label>
+                </div>
+                <input type="text" id="userField">
+            </div>
+            <div class="fields">
+                <div>
+                    <label>Senha: </label>
+                </div>
+                <input type="password" id="passwordField">
+            </div>
+            <div class="fields">
+                <div>
+                    <label>Confirme a senha: </label>
+                </div>
+                <input type="password" id="confirmPasswordField">
+            </div>
+            <div class="fields">
+                <label>Geranciar Dino</label>
+                <input type="checkbox" id="managerDinoCheck">
+                <label>Gerenciar Categoria</label>
+                <input type="checkbox" id="managerCategoryCheck">
+                <label>Gerenciar Administrador</label>
+                <input type="checkbox" id="managerAdmCheck" disabled>
+            </div>
+            <div class="fields">
+                <button id="singupButton">Adicionar</button>
+            </div>
+        </div>
+        <div style="margin-bottom: 30px;"></div>
+        <div class="panel">
+            <div id="itemsDiv"></div>
+        </div>
         <script src="/admin/admin-fetch.js" type="text/javascript"></script>
         <script src="/dialog.js" type="text/javascript"></script>
         <script src="adms.js" type="text/javascript"></script>
