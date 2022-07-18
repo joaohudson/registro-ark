@@ -9,6 +9,7 @@ import (
 	controller "github.com/joaohudson/registro-ark/controlllers"
 	"github.com/joaohudson/registro-ark/db"
 	service "github.com/joaohudson/registro-ark/services"
+	"github.com/joaohudson/registro-ark/util"
 )
 
 func main() {
@@ -62,7 +63,13 @@ func main() {
 	router.Post("/api/dino/category/region", dinoController.CreateRegion)
 	router.Delete("/api/dino/category/region", dinoController.DeleteRegion)
 
-	err := http.ListenAndServe(":8081", router)
+	port, err := util.GetEnv("PORT")
+	if err != nil {
+		fmt.Println("Erro ao recuperar porta do ambiente: ", err)
+		return
+	}
+
+	err = http.ListenAndServe(":"+port, router)
 	if err != nil {
 		fmt.Println("Erro ao iniciar servidor: ", err)
 	}
