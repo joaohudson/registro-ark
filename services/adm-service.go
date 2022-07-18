@@ -61,7 +61,7 @@ func (a *AdmService) PutAdmPermissions(permissions models.AdmChangePermissionsRe
 	if adm == nil {
 		return util.ThrowApiError("Este administrador não existe!", http.StatusNotFound)
 	}
-	if adm.PermissionManagerAdm {
+	if adm.MainAdm {
 		return util.ThrowApiError("O administrador principal não pode ter suas permissões alteradas!", http.StatusPreconditionFailed)
 	}
 
@@ -82,7 +82,7 @@ func (a *AdmService) GetAdm(idAdm uint64) (*models.Adm, *util.ApiError) {
 	return adm, nil
 }
 
-func (a *AdmService) GetAdms(idAdm uint64) ([]models.Adm, *util.ApiError) {
+func (a *AdmService) GetAdms() ([]models.Adm, *util.ApiError) {
 	adms, err := a.admRepo.GetAdms()
 	if err != nil {
 		fmt.Println("Erro ao listar administradores: ", err)

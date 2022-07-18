@@ -25,4 +25,5 @@ type Adm struct {
 	PermissionManagerDino     bool   `json:"permissionManagerDino"`
 	PermissionManagerCategory bool   `json:"permissionManagerCategory"`
 	PermissionManagerAdm      bool   `json:"permissionManagerAdm"`
+	MainAdm                   bool   `json:"mainAdm"`
 }

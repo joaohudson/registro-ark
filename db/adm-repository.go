@@ -17,10 +17,10 @@ func NewAdmRepository(database *sql.DB) *AdmRepository {
 func (a *AdmRepository) CreateAdm(adm models.AdmRegistryRequest) error {
 	const query = `
 		INSERT INTO 
-		adm(name_adm, password_adm, permission_manager_adm, permission_manager_category, permission_manager_dino)
-		VALUES($1, $2, $3, $4, $5);
+		adm(name_adm, password_adm, permission_manager_adm, permission_manager_category, permission_manager_dino, main_adm)
+		VALUES($1, $2, false, $3, $4, false);
 	`
-	rows, err := a.database.Query(query, adm.Name, adm.Password, adm.PermissionManagerAdm, adm.PermissionManagerCategory, adm.PermissionManagerDino)
+	rows, err := a.database.Query(query, adm.Name, adm.Password, adm.PermissionManagerCategory, adm.PermissionManagerDino)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (a *AdmRepository) PutPermissions(permissions models.AdmChangePermissionsRe
 }
 
 func (a *AdmRepository) GetAdms() ([]models.Adm, error) {
-	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm ORDER BY id_adm DESC;")
+	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm, main_adm FROM adm ORDER BY id_adm DESC;")
 	if err != nil {
 		return []models.Adm{}, err
 	}
@@ -55,7 +55,7 @@ func (a *AdmRepository) GetAdms() ([]models.Adm, error) {
 	result := []models.Adm{}
 
 	for rows.Next() {
-		err = rows.Scan(&adm.Id, &adm.Name, &adm.PermissionManagerDino, &adm.PermissionManagerCategory, &adm.PermissionManagerAdm)
+		err = rows.Scan(&adm.Id, &adm.Name, &adm.PermissionManagerDino, &adm.PermissionManagerCategory, &adm.PermissionManagerAdm, &adm.MainAdm)
 		if err != nil {
 			return []models.Adm{}, err
 		}
@@ -66,7 +66,7 @@ func (a *AdmRepository) GetAdms() ([]models.Adm, error) {
 }
 
 func (a *AdmRepository) GetAdmById(id uint64) (*models.Adm, error) {
-	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm FROM adm WHERE id_adm = $1;", id)
+	rows, err := a.database.Query("SELECT id_adm, name_adm, permission_manager_dino, permission_manager_category, permission_manager_adm, main_adm FROM adm WHERE id_adm = $1;", id)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (a *AdmRepository) GetAdmById(id uint64) (*models.Adm, error) {
 	}
 
 	result := &models.Adm{}
-	rows.Scan(&result.Id, &result.Name, &result.PermissionManagerDino, &result.PermissionManagerCategory, &result.PermissionManagerAdm)
+	rows.Scan(&result.Id, &result.Name, &result.PermissionManagerDino, &result.PermissionManagerCategory, &result.PermissionManagerAdm, &result.MainAdm)
 
 	return result, nil
 }
@@ -109,7 +109,7 @@ func (a *AdmRepository) ExistsAdmByName(name string) (bool, error) {
 }
 
 func (a *AdmRepository) GetMainAdmId() (uint64, error) {
-	rows, err := a.database.Query("SELECT id_adm FROM adm WHERE permission_manager_adm = true;")
+	rows, err := a.database.Query("SELECT id_adm FROM adm WHERE main_adm = true;")
 	if err != nil {
 		return 0, err
 	}

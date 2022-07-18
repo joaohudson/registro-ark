@@ -20,7 +20,8 @@ CREATE TABLE adm(
     password_adm VARCHAR(80) NOT NULL,
     permission_manager_dino BOOLEAN NOT NULL,
     permission_manager_category BOOLEAN NOT NULL,
-    permission_manager_adm BOOLEAN NOT NULL
+    permission_manager_adm BOOLEAN NOT NULL,
+    main_adm BOOLEAN NOT NULL
 );
 -- Dados gerais do dinossauro
 CREATE TABLE dino(
@@ -35,5 +36,5 @@ CREATE TABLE dino(
     training_dino TEXT NOT NULL
 );
 
-INSERT INTO adm(name_adm, password_adm, permission_manager_dino, permission_manager_category, permission_manager_adm)
-VALUES('Admin', 'Admin', true, true, true);
+INSERT INTO adm(name_adm, password_adm, permission_manager_dino, permission_manager_category, permission_manager_adm, main_adm)
+VALUES('Admin', 'Admin', true, true, true, true);

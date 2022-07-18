@@ -67,13 +67,13 @@ func (a *AdmController) PutAdmPermissions(response http.ResponseWriter, request 
 }
 
 func (a *AdmController) GetAdms(response http.ResponseWriter, request *http.Request) {
-	idAdm, err := authenticate(request, a.loginService, PermissionManagerAdm)
+	_, err := authenticate(request, a.loginService, PermissionManagerAdm)
 	if err != nil {
 		sendError(response, err)
 		return
 	}
 
-	adms, err := a.admService.GetAdms(idAdm)
+	adms, err := a.admService.GetAdms()
 	if err != nil {
 		sendError(response, err)
 		return
