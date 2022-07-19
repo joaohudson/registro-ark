@@ -316,7 +316,7 @@ func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.
 
 func (c *DinoController) DeleteDino(response http.ResponseWriter, request *http.Request) {
 
-	idAdm, err := authenticate(request, c.loginService, PermissionManagerCategory)
+	idAdm, err := authenticate(request, c.loginService, PermissionManagerDino)
 	if err != nil {
 		sendError(response, err)
 		return
