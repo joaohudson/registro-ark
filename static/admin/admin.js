@@ -12,7 +12,18 @@ async function fetchAdm(){
     return await adminFetch('/api/adm', {}, true);
 }
 
-logoutButton.onclick = () => {
+async function postLogout(){
+    return await adminFetch('/api/adm/logout', {method: 'POST'}, false);
+}
+
+logoutButton.onclick = async () => {
+    try{
+        await postLogout();
+    }
+    catch(e){
+        dialog.showMessage(e);
+        return;
+    }
     delete localStorage.token;
     location.href = '/admin/login';
 };

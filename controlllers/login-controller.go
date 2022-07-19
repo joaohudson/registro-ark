@@ -36,3 +36,17 @@ func (l *LoginController) Login(response http.ResponseWriter, request *http.Requ
 
 	response.Write([]byte(token))
 }
+
+func (l *LoginController) Logout(response http.ResponseWriter, request *http.Request) {
+	idAdm, err := authenticate(request, l.loginService, PermissionManagerNone)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+
+	err = l.loginService.Logout(idAdm)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+}

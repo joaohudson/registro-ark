@@ -50,6 +50,16 @@ func (l *LoginRepository) ExistsClaims(claims *models.Claims) (bool, error) {
 	return true, nil
 }
 
+func (l *LoginRepository) DeleteClaims(idAdm uint64) error {
+	rows, err := l.database.Query("DELETE FROM login WHERE id_adm = $1", idAdm)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+}
+
 func (l *LoginRepository) existsClaimsByIdAdm(idAdm uint64) (bool, error) {
 	rows, err := l.database.Query("SELECT id_adm FROM login WHERE id_adm = $1", idAdm)
 	if err != nil {

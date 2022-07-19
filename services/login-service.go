@@ -36,6 +36,7 @@ func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.Api
 
 	err = l.loginRepo.SaveClaims(cl)
 	if err != nil {
+		fmt.Println("Erro ao salvar sessão do login: ", err)
 		return "", util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
@@ -49,6 +50,16 @@ func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.Api
 	}
 
 	return tokenStr, nil
+}
+
+func (l *LoginService) Logout(idAdm uint64) *util.ApiError {
+	err := l.loginRepo.DeleteClaims(idAdm)
+	if err != nil {
+		fmt.Println("Erro ao fazer logout: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	return nil
 }
 
 func (l *LoginService) GetIdByToken(token string) (uint64, *util.ApiError) {
@@ -66,6 +77,7 @@ func (l *LoginService) GetIdByToken(token string) (uint64, *util.ApiError) {
 
 	existsToken, err := l.loginRepo.ExistsClaims(cl)
 	if err != nil {
+		fmt.Println("Erro ao consultar sessão: ", err)
 		return 0, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 	if !existsToken {
