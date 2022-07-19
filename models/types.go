@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+)
 
 type Dino struct {
 	Id           uint64    `json:"id"`
@@ -26,4 +30,10 @@ type Adm struct {
 	PermissionManagerCategory bool   `json:"permissionManagerCategory"`
 	PermissionManagerAdm      bool   `json:"permissionManagerAdm"`
 	MainAdm                   bool   `json:"mainAdm"`
+}
+
+type Claims struct {
+	Id        uint64    `json:"id"`
+	DateLogin time.Time `json:"dateLogin"`
+	jwt.StandardClaims
 }

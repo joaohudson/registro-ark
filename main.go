@@ -23,6 +23,7 @@ func main() {
 	router.Handle("/*", fs)
 
 	//repositórios
+	loginRepo := db.NewLoginRepository(database)
 	dinoRepo := db.NewDinoRepository(database)
 	locomotionRepo := db.NewLocomotionRepository(database)
 	regionRepo := db.NewRegionRepository(database)
@@ -35,7 +36,7 @@ func main() {
 	regionService := service.NewRegionService(regionRepo, dinoRepo)
 	foodService := service.NewFoodService(foodRepo, dinoRepo)
 	admService := service.NewAdmService(admRepo)
-	loginService := service.NewLoginService(admRepo)
+	loginService := service.NewLoginService(admRepo, loginRepo)
 
 	//controllers
 	dinoController := controller.NewDinoController(dinoService, locomotionService, regionService, foodService, loginService)

@@ -12,32 +12,31 @@ import (
 )
 
 type LoginService struct {
-	admRepo *db.AdmRepository
+	admRepo   *db.AdmRepository
+	loginRepo *db.LoginRepository
 }
 
-type claims struct {
-	Id uint64 `json:"id"`
-	jwt.StandardClaims
-}
-
-func NewLoginService(admRepo *db.AdmRepository) *LoginService {
-	return &LoginService{admRepo: admRepo}
+func NewLoginService(admRepo *db.AdmRepository, loginRepo *db.LoginRepository) *LoginService {
+	return &LoginService{admRepo: admRepo, loginRepo: loginRepo}
 }
 
 func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.ApiError) {
-	clientId, err := l.admRepo.GetAdmIdByCredentials(credentials.Name, credentials.Password)
+	idAdm, err := l.admRepo.GetAdmIdByCredentials(credentials.Name, credentials.Password)
 	if err != nil {
 		fmt.Println("Erro ao recuperar id do usuário no banco: ", err)
 		return "", util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
-	} else if clientId == 0 {
+	} else if idAdm == 0 {
 		return "", util.ThrowApiError("Usuário ou senha inválidos!", http.StatusBadRequest)
 	}
 
-	cl := &claims{
-		Id: clientId,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * 30).Unix(),
-		},
+	cl := &models.Claims{
+		Id:        idAdm,
+		DateLogin: time.Now(),
+	}
+
+	err = l.loginRepo.SaveClaims(cl)
+	if err != nil {
+		return "", util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
 	secret := GetJwtSecret()
@@ -54,7 +53,7 @@ func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.Api
 
 func (l *LoginService) GetIdByToken(token string) (uint64, *util.ApiError) {
 	secret := GetJwtSecret()
-	cl := &claims{}
+	cl := &models.Claims{}
 	tkn, err := jwt.ParseWithClaims(token, cl, func(token *jwt.Token) (interface{}, error) {
 		return secret, nil
 	})
@@ -62,6 +61,14 @@ func (l *LoginService) GetIdByToken(token string) (uint64, *util.ApiError) {
 		return 0, util.ThrowApiError("", http.StatusUnauthorized)
 	}
 	if !tkn.Valid {
+		return 0, util.ThrowApiError("", http.StatusUnauthorized)
+	}
+
+	existsToken, err := l.loginRepo.ExistsClaims(cl)
+	if err != nil {
+		return 0, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if !existsToken {
 		return 0, util.ThrowApiError("", http.StatusUnauthorized)
 	}
 
