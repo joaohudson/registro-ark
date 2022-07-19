@@ -7,7 +7,13 @@ async function deleteDino(id){
 }
 
 function formatDate(dateStr){
-    return dateStr.substring(0, 19).replaceAll('-', '/').replaceAll('T', ' ');
+    const year = dateStr.substring(0, 4);
+    const month = dateStr.substring(5, 7);
+    const day = dateStr.substring(8, 10);
+
+    const hourAndMinutes = dateStr.substring(11, 16);
+
+    return hourAndMinutes + ' ' + day + '/' + month + '/' + year;
 }
 
 async function loadData(){
