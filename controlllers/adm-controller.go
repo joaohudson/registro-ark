@@ -66,6 +66,32 @@ func (a *AdmController) PutAdmPermissions(response http.ResponseWriter, request 
 	}
 }
 
+func (a *AdmController) PutAdmCredentials(response http.ResponseWriter, request *http.Request) {
+	idAdm, apiErr := authenticate(request, a.loginService, PermissionManagerNone)
+	if apiErr != nil {
+		sendError(response, apiErr)
+		return
+	}
+
+	var credentials models.AdmChangeCredentialsRequest
+	decode := json.NewDecoder(request.Body)
+	err := decode.Decode(&credentials)
+	if err != nil {
+		fmt.Println("Erro ao fazer parse da mudança de credenciais: ", err)
+		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
+		return
+	}
+
+	apiErr = a.admService.PutAdmCredentials(idAdm, credentials)
+	if apiErr != nil {
+		sendError(response, apiErr)
+		return
+	}
+
+	a.loginService.Logout(idAdm)
+	response.WriteHeader(http.StatusUnauthorized)
+}
+
 func (a *AdmController) GetAdms(response http.ResponseWriter, request *http.Request) {
 	_, err := authenticate(request, a.loginService, PermissionManagerAdm)
 	if err != nil {

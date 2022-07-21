@@ -73,6 +73,26 @@ func (a *AdmService) PutAdmPermissions(permissions models.AdmChangePermissionsRe
 	return nil
 }
 
+func (a *AdmService) PutAdmCredentials(idAdm uint64, credentials models.AdmChangeCredentialsRequest) *util.ApiError {
+
+	id, err := a.admRepo.GetAdmIdByCredentials(credentials.Name, credentials.Password)
+	if err != nil {
+		fmt.Println("Erro ao buscar administrador por credenciais:", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if id != idAdm {
+		return util.ThrowApiError("Usuário ou senha inválidos!", http.StatusBadRequest)
+	}
+
+	err = a.admRepo.PutCredentials(idAdm, credentials.NewName, credentials.NewPassowrd)
+	if err != nil {
+		fmt.Println("Erro ao atualizar credenciais do administrador: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	return nil
+}
+
 func (a *AdmService) GetAdm(idAdm uint64) (*models.Adm, *util.ApiError) {
 	adm, err := a.admRepo.GetAdmById(idAdm)
 	if err != nil {

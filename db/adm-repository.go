@@ -33,9 +33,24 @@ func (a *AdmRepository) PutPermissions(permissions models.AdmChangePermissionsRe
 	const query = `UPDATE adm SET
 	permission_manager_category = $1,
 	permission_manager_dino = $2
-	WHERE id_adm = $3`
+	WHERE id_adm = $3;`
 
 	rows, err := a.database.Query(query, permissions.PermissionManagerCategory, permissions.PermissionManagerDino, permissions.Id)
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+}
+
+func (a *AdmRepository) PutCredentials(idAdm uint64, newName string, newPassword string) error {
+	const query = `UPDATE adm SET
+	name_adm = $1,
+	password_adm = $2
+	WHERE id_adm = $3;`
+
+	rows, err := a.database.Query(query, newName, newPassword, idAdm)
 	if err != nil {
 		return err
 	}

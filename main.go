@@ -56,6 +56,7 @@ func main() {
 	router.Post("/api/adm/logout", loginController.Logout)
 	router.Post("/api/adm", admController.CreateAdm)
 	router.Put("/api/adm/permissions", admController.PutAdmPermissions)
+	router.Put("/api/adm/credentials", admController.PutAdmCredentials)
 	router.Get("/api/adm", admController.GetAdm)
 	router.Get("/api/adms", admController.GetAdms)
 	router.Post("/api/dino/category/food", dinoController.CreateFood)

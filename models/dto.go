@@ -43,3 +43,10 @@ type AdmChangePermissionsRequest struct {
 	PermissionManagerDino     bool   `json:"permissionManagerDino"`
 	PermissionManagerCategory bool   `json:"permissionManagerCategory"`
 }
+
+type AdmChangeCredentialsRequest struct {
+	Name        string `json:"name"`
+	Password    string `json:"password"`
+	NewName     string `json:"newName"`
+	NewPassowrd string `json:"newPassword"`
+}
