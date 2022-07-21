@@ -12,12 +12,13 @@ import (
 )
 
 type LoginService struct {
+	secret    []byte
 	admRepo   *db.AdmRepository
 	loginRepo *db.LoginRepository
 }
 
-func NewLoginService(admRepo *db.AdmRepository, loginRepo *db.LoginRepository) *LoginService {
-	return &LoginService{admRepo: admRepo, loginRepo: loginRepo}
+func NewLoginService(secret string, admRepo *db.AdmRepository, loginRepo *db.LoginRepository) *LoginService {
+	return &LoginService{secret: []byte(secret), admRepo: admRepo, loginRepo: loginRepo}
 }
 
 func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.ApiError) {
@@ -40,10 +41,8 @@ func (l *LoginService) Login(credentials models.LoginRequest) (string, *util.Api
 		return "", util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
-	secret := GetJwtSecret()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, cl)
-
-	tokenStr, err2 := token.SignedString(secret)
+	tokenStr, err2 := token.SignedString(l.secret)
 	if err2 != nil {
 		fmt.Println("Erro ao obter token: ", err2)
 		return "", util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
@@ -63,10 +62,9 @@ func (l *LoginService) Logout(idAdm uint64) *util.ApiError {
 }
 
 func (l *LoginService) GetIdByToken(token string) (uint64, *util.ApiError) {
-	secret := GetJwtSecret()
 	cl := &models.Claims{}
 	tkn, err := jwt.ParseWithClaims(token, cl, func(token *jwt.Token) (interface{}, error) {
-		return secret, nil
+		return l.secret, nil
 	})
 	if err != nil {
 		return 0, util.ThrowApiError("", http.StatusUnauthorized)
@@ -127,8 +125,4 @@ func (l *LoginService) CheckPermissionManagerAdm(clientId uint64) *util.ApiError
 	}
 
 	return util.ThrowApiError("", http.StatusForbidden)
-}
-
-func GetJwtSecret() []byte {
-	return []byte("AABBCC")
 }

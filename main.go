@@ -22,6 +22,18 @@ func main() {
 	fs := http.FileServer(http.Dir("./static"))
 	router.Handle("/*", fs)
 
+	//variáveis de ambiente
+	port, err := util.GetEnv("PORT")
+	if err != nil {
+		fmt.Println("Erro ao recuperar porta do ambiente: ", err)
+		return
+	}
+	secret, err := util.GetEnv("SECRET")
+	if err != nil {
+		fmt.Println("Erro ao recuperar secret do ambiente:", err)
+		return
+	}
+
 	//repositórios
 	loginRepo := db.NewLoginRepository(database)
 	dinoRepo := db.NewDinoRepository(database)
@@ -36,7 +48,7 @@ func main() {
 	regionService := service.NewRegionService(regionRepo, dinoRepo)
 	foodService := service.NewFoodService(foodRepo, dinoRepo)
 	admService := service.NewAdmService(admRepo)
-	loginService := service.NewLoginService(admRepo, loginRepo)
+	loginService := service.NewLoginService(secret, admRepo, loginRepo)
 
 	//controllers
 	dinoController := controller.NewDinoController(dinoService, locomotionService, regionService, foodService, loginService)
@@ -65,12 +77,6 @@ func main() {
 	router.Delete("/api/dino/category/locomotion", dinoController.DeleteLocomotion)
 	router.Post("/api/dino/category/region", dinoController.CreateRegion)
 	router.Delete("/api/dino/category/region", dinoController.DeleteRegion)
-
-	port, err := util.GetEnv("PORT")
-	if err != nil {
-		fmt.Println("Erro ao recuperar porta do ambiente: ", err)
-		return
-	}
 
 	err = http.ListenAndServe(":"+port, router)
 	if err != nil {
