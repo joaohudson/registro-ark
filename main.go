@@ -30,7 +30,7 @@ func main() {
 	}
 	secret, err := util.GetEnv("SECRET")
 	if err != nil {
-		fmt.Println("Erro ao recuperar secret do ambiente:", err)
+		fmt.Println("Erro ao recuperar secret do ambiente: ", err)
 		return
 	}
 
