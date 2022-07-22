@@ -10,9 +10,9 @@ type Dino struct {
 	Id           uint64    `json:"id"`
 	IdAdm        uint64    `json:"-"`
 	Name         string    `json:"name"`
-	Region       string    `json:"region"`
-	Locomotion   string    `json:"locomotion"`
-	Food         string    `json:"food"`
+	Region       Category  `json:"region"`
+	Locomotion   Category  `json:"locomotion"`
+	Food         Category  `json:"food"`
 	Training     string    `json:"training"`
 	Utility      string    `json:"utility"`
 	CreationDate time.Time `json:"creationDate"`

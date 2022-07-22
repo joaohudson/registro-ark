@@ -54,7 +54,7 @@ async function loadData(){
         const tr = document.createElement('tr');
         for(const f of categoryNames){
             const td = document.createElement('td');
-            td.innerText = obj[f.name];
+            td.innerText = typeof(obj[f.name]) == 'string' ? obj[f.name] : obj[f.name].name;
             tr.appendChild(td);
         }
         table.appendChild(tr);

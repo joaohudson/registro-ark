@@ -44,9 +44,9 @@ async function main(){
 
     h1.innerText = dino.name;
     title.innerText = 'Registro Ark - ' + dino.name;
-    regionP.innerText = dino.region;
-    locomotionP.innerText = dino.locomotion;
-    foodP.innerText = dino.food;
+    regionP.innerText = dino.region.name;
+    locomotionP.innerText = dino.locomotion.name;
+    foodP.innerText = dino.food.name;
     utilityP.innerText = dino.utility;
     trainingP.innerText = dino.training;
 }

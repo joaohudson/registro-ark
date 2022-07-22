@@ -38,8 +38,11 @@ func (r *DinoRepository) FindDinoByFilter(filter models.DinoFilter) ([]models.Di
 	d.id_dino,
 	d.id_adm,
 	d.name_dino, 
-	f.name_food, 
-	l.name_locomotion, 
+	f.id_food,
+	f.name_food,
+	l.id_locomotion, 
+	l.name_locomotion,
+	r.id_region, 
 	r.name_region, 
 	d.dt_creation,
 	d.utility_dino, 
@@ -65,7 +68,7 @@ func (r *DinoRepository) FindDinoByFilter(filter models.DinoFilter) ([]models.Di
 	var dino models.Dino
 
 	for rows.Next() {
-		err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
+		err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food.Id, &dino.Food.Name, &dino.Locomotion.Id, &dino.Locomotion.Name, &dino.Region.Id, &dino.Region.Name, &dino.CreationDate, &dino.Utility, &dino.Training)
 		if err2 != nil {
 			return []models.Dino{}, err2
 		}
@@ -80,8 +83,11 @@ func (r *DinoRepository) FindDinoByFilterForAdm(idAdm uint64, filter models.Dino
 	d.id_dino,
 	d.id_adm,
 	d.name_dino, 
-	f.name_food, 
-	l.name_locomotion, 
+	f.id_food,
+	f.name_food,
+	l.id_locomotion, 
+	l.name_locomotion,
+	r.id_region, 
 	r.name_region, 
 	d.dt_creation,
 	d.utility_dino, 
@@ -109,7 +115,7 @@ func (r *DinoRepository) FindDinoByFilterForAdm(idAdm uint64, filter models.Dino
 	var dino models.Dino
 
 	for rows.Next() {
-		err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
+		err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food.Id, &dino.Food.Name, &dino.Locomotion.Id, &dino.Locomotion.Name, &dino.Region.Id, &dino.Region.Name, &dino.CreationDate, &dino.Utility, &dino.Training)
 		if err2 != nil {
 			return []models.Dino{}, err2
 		}
@@ -124,8 +130,11 @@ func (r *DinoRepository) FindDinoByFilterForMainAdm(filter models.DinoFilter) ([
 	d.id_dino,
 	d.id_adm,
 	d.name_dino, 
-	f.name_food, 
-	l.name_locomotion, 
+	f.id_food,
+	f.name_food,
+	l.id_locomotion, 
+	l.name_locomotion,
+	r.id_region, 
 	r.name_region, 
 	d.dt_creation,
 	d.utility_dino, 
@@ -151,7 +160,7 @@ func (r *DinoRepository) FindDinoByFilterForMainAdm(filter models.DinoFilter) ([
 	var dino models.Dino
 
 	for rows.Next() {
-		err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
+		err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food.Id, &dino.Food.Name, &dino.Locomotion.Id, &dino.Locomotion.Name, &dino.Region.Id, &dino.Region.Name, &dino.CreationDate, &dino.Utility, &dino.Training)
 		if err2 != nil {
 			return []models.Dino{}, err2
 		}
@@ -166,12 +175,15 @@ func (r *DinoRepository) FindDinoById(id uint64) (*models.Dino, error) {
 	d.id_dino,
 	d.id_adm,
 	d.name_dino, 
-	f.name_food, 
-	l.name_locomotion, 
-	r.name_region,
-	d.dt_creation, 
+	f.id_food,
+	f.name_food,
+	l.id_locomotion, 
+	l.name_locomotion,
+	r.id_region, 
+	r.name_region, 
+	d.dt_creation,
 	d.utility_dino, 
-	d.training_dino 
+	d.training_dino
 	FROM dino d
 	INNER JOIN locomotion l ON d.id_locomotion = l.id_locomotion
 	INNER JOIN region r ON d.id_region = r.id_region
@@ -188,7 +200,7 @@ func (r *DinoRepository) FindDinoById(id uint64) (*models.Dino, error) {
 	if !rows.Next() {
 		return nil, nil
 	}
-	err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food, &dino.Locomotion, &dino.Region, &dino.CreationDate, &dino.Utility, &dino.Training)
+	err2 := rows.Scan(&dino.Id, &dino.IdAdm, &dino.Name, &dino.Food.Id, &dino.Food.Name, &dino.Locomotion.Id, &dino.Locomotion.Name, &dino.Region.Id, &dino.Region.Name, &dino.CreationDate, &dino.Utility, &dino.Training)
 
 	if err2 != nil {
 		return nil, err2
