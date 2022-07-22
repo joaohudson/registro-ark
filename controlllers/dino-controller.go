@@ -12,26 +12,17 @@ import (
 )
 
 type DinoController struct {
-	dinoService       *service.DinoService
-	locomotionService *service.LocomotionService
-	regionService     *service.RegionService
-	foodService       *service.FoodService
-	loginService      *service.LoginService
+	dinoService  *service.DinoService
+	loginService *service.LoginService
 }
 
 func NewDinoController(
 	dinoService *service.DinoService,
-	locomotionService *service.LocomotionService,
-	regionService *service.RegionService,
-	foodService *service.FoodService,
 	loginService *service.LoginService) *DinoController {
 
 	return &DinoController{
-		dinoService:       dinoService,
-		locomotionService: locomotionService,
-		regionService:     regionService,
-		foodService:       foodService,
-		loginService:      loginService,
+		dinoService:  dinoService,
+		loginService: loginService,
 	}
 }
 
@@ -120,173 +111,6 @@ func (c *DinoController) FindDinoByFilterForAdm(response http.ResponseWriter, re
 	}
 
 	sendJson(response, dinos)
-}
-
-func (c *DinoController) CreateLocomotion(response http.ResponseWriter, request *http.Request) {
-
-	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
-	if err != nil {
-		sendError(response, err)
-		return
-	}
-
-	decoder := json.NewDecoder(request.Body)
-
-	var locomotion models.CategoryRegistryRequest
-	err2 := decoder.Decode(&locomotion)
-	if err2 != nil {
-		fmt.Println("Erro ao fazer parse da locomoção: ", err2)
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Locomoção inválida!"))
-		return
-	}
-
-	err3 := c.locomotionService.CreateLocomotion(locomotion)
-	if err3 != nil {
-		sendError(response, err3)
-		return
-	}
-}
-
-func (c *DinoController) DeleteLocomotion(response http.ResponseWriter, request *http.Request) {
-
-	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
-	if err != nil {
-		sendError(response, err)
-		return
-	}
-
-	id, err2 := parseQueryParameterUint64(request, "id")
-	if err2 != nil {
-		fmt.Println("Erro no parse do id:", err2)
-		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
-	}
-
-	err3 := c.locomotionService.DeleteLocomotion(id)
-	if err3 != nil {
-		sendError(response, err3)
-	}
-}
-
-func (c *DinoController) CreateRegion(response http.ResponseWriter, request *http.Request) {
-
-	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
-	if err != nil {
-		sendError(response, err)
-		return
-	}
-
-	decoder := json.NewDecoder(request.Body)
-
-	var region models.CategoryRegistryRequest
-	err2 := decoder.Decode(&region)
-	if err2 != nil {
-		fmt.Println("Erro ao fazer parse da região: ", err2)
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Região inválida!"))
-		return
-	}
-
-	err3 := c.regionService.CreateRegion(region)
-	if err3 != nil {
-		sendError(response, err3)
-		return
-	}
-}
-
-func (c *DinoController) DeleteRegion(response http.ResponseWriter, request *http.Request) {
-
-	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
-	if err != nil {
-		sendError(response, err)
-		return
-	}
-
-	id, err2 := parseQueryParameterUint64(request, "id")
-	if err2 != nil {
-		fmt.Println("Erro no parse do id:", err2)
-		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
-	}
-
-	err3 := c.regionService.DeleteRegion(id)
-	if err3 != nil {
-		sendError(response, err3)
-	}
-}
-
-func (c *DinoController) CreateFood(response http.ResponseWriter, request *http.Request) {
-
-	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
-	if err != nil {
-		sendError(response, err)
-		return
-	}
-
-	decoder := json.NewDecoder(request.Body)
-
-	var food models.CategoryRegistryRequest
-	err2 := decoder.Decode(&food)
-	if err2 != nil {
-		fmt.Println("Erro ao fazer parse do tipo de alimentação: ", err2)
-		response.WriteHeader(http.StatusBadRequest)
-		response.Write([]byte("Tipo de Alimentação inválido!"))
-		return
-	}
-
-	err3 := c.foodService.CreateFood(food)
-	if err3 != nil {
-		sendError(response, err3)
-		return
-	}
-}
-
-func (c *DinoController) DeleteFood(response http.ResponseWriter, request *http.Request) {
-
-	_, err := authenticate(request, c.loginService, PermissionManagerCategory)
-	if err != nil {
-		sendError(response, err)
-		return
-	}
-
-	id, err2 := parseQueryParameterUint64(request, "id")
-	if err2 != nil {
-		fmt.Println("Erro no parse do id:", err2)
-		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
-	}
-
-	err3 := c.foodService.DeleteFood(id)
-	if err3 != nil {
-		sendError(response, err3)
-	}
-}
-
-func (c *DinoController) DinoCategories(response http.ResponseWriter, request *http.Request) {
-
-	regions, err := c.regionService.ListAllRegions()
-	if err != nil {
-		sendError(response, err)
-		return
-	}
-
-	locomotions, err2 := c.locomotionService.ListAllLocomotions()
-	if err2 != nil {
-		sendError(response, err2)
-		return
-	}
-
-	foods, err3 := c.foodService.ListAllFoods()
-	if err3 != nil {
-		sendError(response, err3)
-		return
-	}
-
-	result := models.DinoCategoryResponse{
-		Regions:     regions,
-		Locomotions: locomotions,
-		Foods:       foods,
-	}
-
-	sendJson(response, result)
 }
 
 func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.Request) {

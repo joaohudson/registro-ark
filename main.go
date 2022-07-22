@@ -51,15 +51,16 @@ func main() {
 	loginService := service.NewLoginService(secret, admRepo, loginRepo)
 
 	//controllers
-	dinoController := controller.NewDinoController(dinoService, locomotionService, regionService, foodService, loginService)
+	dinoController := controller.NewDinoController(dinoService, loginService)
 	admController := controller.NewAdmController(admService, loginService)
 	loginController := controller.NewLoginController(loginService)
+	categoryController := controller.NewCategoryController(loginService, locomotionService, regionService, foodService)
 
 	//rotas públicas
 	router.Post("/api/adm/login", loginController.Login)
 	router.Get("/api/dino", dinoController.FindDinoById)
 	router.Get("/api/dinos", dinoController.FindDinoByFilter)
-	router.Get("/api/dino/categories", dinoController.DinoCategories)
+	router.Get("/api/dino/categories", categoryController.DinoCategories)
 
 	//rotas privadas
 	router.Post("/api/dino", dinoController.CreateDino)
@@ -72,12 +73,12 @@ func main() {
 	router.Put("/api/adm/credentials", admController.PutAdmCredentials)
 	router.Get("/api/adm", admController.GetAdm)
 	router.Get("/api/adms", admController.GetAdms)
-	router.Post("/api/dino/category/food", dinoController.CreateFood)
-	router.Delete("/api/dino/category/food", dinoController.DeleteFood)
-	router.Post("/api/dino/category/locomotion", dinoController.CreateLocomotion)
-	router.Delete("/api/dino/category/locomotion", dinoController.DeleteLocomotion)
-	router.Post("/api/dino/category/region", dinoController.CreateRegion)
-	router.Delete("/api/dino/category/region", dinoController.DeleteRegion)
+	router.Post("/api/dino/category/food", categoryController.CreateFood)
+	router.Delete("/api/dino/category/food", categoryController.DeleteFood)
+	router.Post("/api/dino/category/locomotion", categoryController.CreateLocomotion)
+	router.Delete("/api/dino/category/locomotion", categoryController.DeleteLocomotion)
+	router.Post("/api/dino/category/region", categoryController.CreateRegion)
+	router.Delete("/api/dino/category/region", categoryController.DeleteRegion)
 
 	err = http.ListenAndServe(":"+port, router)
 	if err != nil {
