@@ -314,6 +314,37 @@ func (c *DinoController) CreateDino(response http.ResponseWriter, request *http.
 	}
 }
 
+func (c *DinoController) PutDino(response http.ResponseWriter, request *http.Request) {
+
+	idAdm, err := authenticate(request, c.loginService, PermissionManagerDino)
+	if err != nil {
+		sendError(response, err)
+		return
+	}
+	idDino, err2 := parseQueryParameterUint64(request, "id")
+	if err2 != nil {
+		fmt.Println("Erro no parse do id do dino: ", err2)
+		sendError(response, util.ThrowApiError("Esse dino não existe!", http.StatusBadRequest))
+		return
+	}
+
+	var dino models.DinoRegistryRequest
+	decoder := json.NewDecoder(request.Body)
+	err2 = decoder.Decode(&dino)
+	if err2 != nil {
+		fmt.Println("Erro na alteração de dino: ", err2)
+		response.WriteHeader(http.StatusBadRequest)
+		response.Write([]byte("Informações do dino inválidas!"))
+		return
+	}
+
+	err3 := c.dinoService.PutDino(idDino, idAdm, dino)
+	if err3 != nil {
+		sendError(response, err3)
+		return
+	}
+}
+
 func (c *DinoController) DeleteDino(response http.ResponseWriter, request *http.Request) {
 
 	idAdm, err := authenticate(request, c.loginService, PermissionManagerDino)

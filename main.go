@@ -63,6 +63,7 @@ func main() {
 
 	//rotas privadas
 	router.Post("/api/dino", dinoController.CreateDino)
+	router.Put("/api/dino", dinoController.PutDino)
 	router.Delete("/api/dino", dinoController.DeleteDino)
 	router.Get("/api/adm/dinos", dinoController.FindDinoByFilterForAdm)
 	router.Post("/api/adm/logout", loginController.Logout)

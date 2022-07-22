@@ -33,8 +33,7 @@ func NewDinoService(
 	}
 }
 
-func (s *DinoService) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) *util.ApiError {
-
+func (s *DinoService) validateRegistryDino(dino models.DinoRegistryRequest) *util.ApiError {
 	nameLen := len(dino.Name)
 	if nameLen > util.MaxDinoName {
 		message := fmt.Sprintf("Nome do dino muito longo!\nO tamanho máximo permitido é de %v caracteres.", util.MaxDinoName)
@@ -55,6 +54,43 @@ func (s *DinoService) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) 
 		return util.ThrowApiError("Informe a descrição do dino!", http.StatusBadRequest)
 	}
 
+	existsLocomotion, err2 := s.locomotionRepo.ExistsLocomotionById(dino.LocomotionId)
+	if err2 != nil {
+		fmt.Printf("Erro ao verificar locomoção para id %v: %v\n", dino.LocomotionId, err2)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if !existsLocomotion {
+		return util.ThrowApiError("Informe uma locomoção válida!", http.StatusBadRequest)
+	}
+
+	existsRegion, err3 := s.regionRepo.ExistsRegionById(dino.RegionId)
+	if err3 != nil {
+		fmt.Printf("Erro ao verificar região para id %v: %v\n", dino.RegionId, err3)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if !existsRegion {
+		return util.ThrowApiError("Informe uma região válida!", http.StatusBadRequest)
+	}
+
+	existsFood, err4 := s.foodRepo.ExistsFoodById(dino.FoodId)
+	if err4 != nil {
+		fmt.Printf("Erro ao verificar alimentação para id %v: %v\n", dino.RegionId, err4)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if !existsFood {
+		return util.ThrowApiError("Informe um tipo de alimentação válida!", http.StatusBadRequest)
+	}
+
+	return nil
+}
+
+func (s *DinoService) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) *util.ApiError {
+
+	apiErr := s.validateRegistryDino(dino)
+	if apiErr != nil {
+		return apiErr
+	}
+
 	existsDino, err := s.dinoRepo.ExistsDinoByName(dino.Name)
 	if err != nil {
 		fmt.Println("Erro ao verificar dino por nome: ", err)
@@ -64,37 +100,36 @@ func (s *DinoService) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) 
 		return util.ThrowApiError("Já existe um dino com esse nome!", http.StatusPreconditionFailed)
 	}
 
-	existsLocomotion, err2 := s.locomotionRepo.ExistsLocomotionById(dino.LocomotionId)
-	if err2 != nil {
-		fmt.Printf("Erro ao verificar locomoção para id %v: %v\n", dino.LocomotionId, err)
+	err = s.dinoRepo.CreateDino(idAdm, dino)
+
+	if err != nil {
+		fmt.Println("Erro ao inserir dados no banco: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusBadRequest)
+	}
+
+	return nil
+}
+
+func (s *DinoService) PutDino(idDino uint64, idAdm uint64, dino models.DinoRegistryRequest) *util.ApiError {
+
+	apiErr := s.validateRegistryDino(dino)
+	if apiErr != nil {
+		return apiErr
+	}
+
+	existsDino, err := s.dinoRepo.ExistsDinoById(idDino)
+	if err != nil {
+		fmt.Println("Erro ao buscar dino por id: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
-	if !existsLocomotion {
-		return util.ThrowApiError("Informe uma locomoção válida!", http.StatusBadRequest)
+	if !existsDino {
+		return util.ThrowApiError("Dino não encontrado!", http.StatusNotFound)
 	}
 
-	existsRegion, err3 := s.regionRepo.ExistsRegionById(dino.RegionId)
-	if err3 != nil {
-		fmt.Printf("Erro ao verificar região para id %v: %v\n", dino.RegionId, err)
-		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
-	}
-	if !existsRegion {
-		return util.ThrowApiError("Informe uma região válida!", http.StatusBadRequest)
-	}
+	err = s.dinoRepo.PutDino(idDino, idAdm, dino)
 
-	existsFood, err4 := s.foodRepo.ExistsFoodById(dino.FoodId)
-	if err4 != nil {
-		fmt.Printf("Erro ao verificar alimentação para id %v: %v\n", dino.RegionId, err)
-		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
-	}
-	if !existsFood {
-		return util.ThrowApiError("Informe um tipo de alimentação válida!", http.StatusBadRequest)
-	}
-
-	err5 := s.dinoRepo.CreateDino(idAdm, dino)
-
-	if err5 != nil {
-		fmt.Println("Erro ao inserir dados no banco: ", err5)
+	if err != nil {
+		fmt.Println("Erro ao atualizar dados no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusBadRequest)
 	}
 

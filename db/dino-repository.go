@@ -33,6 +33,22 @@ func (r *DinoRepository) CreateDino(idAdm uint64, dino models.DinoRegistryReques
 	return nil
 }
 
+func (r *DinoRepository) PutDino(idDino uint64, idAdm uint64, dino models.DinoRegistryRequest) error {
+	const query = `
+	UPDATE dino 
+	SET name_dino = $1, id_food = $2, id_locomotion = $3, id_region = $4, utility_dino = $5, training_dino = $6
+	WHERE id_dino = $7;`
+
+	rows, err := r.db.Query(query, dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, dino.Utility, dino.Training, idDino)
+	if err != nil {
+
+		return err
+	}
+	defer rows.Close()
+
+	return nil
+}
+
 func (r *DinoRepository) FindDinoByFilter(filter models.DinoFilter) ([]models.Dino, error) {
 	const query = `SELECT 
 	d.id_dino,
