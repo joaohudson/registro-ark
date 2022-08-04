@@ -53,6 +53,7 @@ dialog button{
     text-align: center;
 }
 .buttonLinkDiv{
+    user-select: none;
     font-weight: bold;
     text-align: center;
     margin-left: auto;
