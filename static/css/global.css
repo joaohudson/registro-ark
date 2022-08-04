@@ -1,3 +1,6 @@
+*{
+    outline: none;
+}
 html{
     height: 100%;
 }
@@ -8,18 +11,30 @@ body{
     background-image: url('/images/ark-survival-evolved1-18.webp');
     background-repeat: no-repeat;
     background-attachment: fixed;
+    padding-bottom: 15px;
+}
+h1, label, select, button {
+    user-select: none;
 }
 h1{
     font-size: 48px;
     text-shadow: 2px 1.5px 0 #be823e;
 }
 select, button{
+    padding-left: 5px;
+    border: none;
+    border-radius: 15px;
     background-color: black;
     color: #be823e;
     height: 20px;
     cursor: pointer;
 }
+button{
+    padding-left: 10px;
+    padding-right: 10px;
+}
 dialog {
+    border-radius: 25px;
     background-color: #be823e;
     border-color: black;
     width: 30%;
@@ -44,7 +59,7 @@ dialog button{
     margin-right: auto;
     margin-top: 20px;
     background-color: black;
-    border-radius: 10%;
+    border-radius: 15px;
     width: 180px;
     padding: 10px 10px 10px 10px;
 }

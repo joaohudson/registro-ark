@@ -9,6 +9,9 @@
                 font-weight: bold;
             }
             .itemDiv{
+                padding-top: 3px;
+                padding-bottom: 3px;
+                border-radius: 10px;
                 background-color: black;
                 width: fit-content;
                 border-color: black;
@@ -50,6 +53,7 @@
                 color: #be823e;
             }
             .panel{
+                border-radius: 15px;
                 border: solid 1px black;
                 margin-left: auto;
                 margin-right: auto;
@@ -86,12 +90,18 @@
                 <input type="password" id="confirmPasswordField">
             </div>
             <div class="fields">
-                <label>Geranciar Dino</label>
-                <input type="checkbox" id="managerDinoCheck">
-                <label>Gerenciar Categoria</label>
-                <input type="checkbox" id="managerCategoryCheck">
-                <label>Gerenciar Administrador</label>
-                <input type="checkbox" id="managerAdmCheck" disabled>
+                <span>
+                    <label>Geranciar Dino</label>
+                    <input type="checkbox" id="managerDinoCheck">
+                </span>
+                <span>
+                    <label>Gerenciar Categoria</label>
+                    <input type="checkbox" id="managerCategoryCheck">
+                </span>
+                <span>
+                    <label>Gerenciar Administrador</label>
+                    <input type="checkbox" id="managerAdmCheck" disabled>
+                </span>
             </div>
             <div class="fields">
                 <button id="singupButton">Adicionar</button>

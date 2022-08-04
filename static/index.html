@@ -2,14 +2,17 @@
 <html>
     <head>
         <style>
+            table, th, td, tr {
+                border-radius: 25px;
+            }
             table{
                 width: 100%;
             }
             th{
-                background-color: #3a200293
+                background-color: #3a2002c4
             }
-            table, td{
-                background-color: #753f023f;
+            td{
+                background-color: #753f0273;
             }
             th, td{
                 text-align: center;
@@ -42,12 +45,18 @@
     <body>
         <div class="centered">
             <h1>Dinos</h1>
-            <label id="foodLabel">Alimentação:</label>
-            <select id="foodField"></select>
-            <label id="locomotionLabel">Locomoção:</label>
-            <select id="locomotionField"></select>
-            <label id="regionLabel">Região:</label>
-            <select id="regionField"></select>
+            <span>
+                <label id="foodLabel">Alimentação:</label>
+                <select id="foodField"></select>
+            </span>
+            <span>
+                <label id="locomotionLabel">Locomoção:</label>
+                <select id="locomotionField"></select>
+            </span>
+            <span>
+                <label id="regionLabel">Região:</label>
+                <select id="regionField"></select>
+            </span>
             <button id="filterButton">Filtrar</button>
         </div>
         <div id="itemsDiv"></div>
