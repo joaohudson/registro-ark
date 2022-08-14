@@ -6,6 +6,10 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+type Image struct {
+	Base64 string `json:"base64"`
+}
+
 type Dino struct {
 	Id           uint64    `json:"id"`
 	IdAdm        uint64    `json:"-"`

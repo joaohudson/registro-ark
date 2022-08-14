@@ -33,6 +33,15 @@
                 padding-top: 20px;
                 padding-bottom: 20px;
             }
+            #dinoImageDiv{
+                margin-bottom: 15px;
+            }
+            #dinoImageDiv img{
+                width: 40%;
+                height: auto;
+                border-radius: 10px;
+                border: 3px solid black;
+            }
         </style>
         <title id="title">Registro Ark</title>
         <meta charset="utf-8">
@@ -42,6 +51,12 @@
     <body>
         <h1 class="centered" id="h1"></h1>
         <div id="infoDiv" class="centered">
+            <div id="dinoImageDiv"  hidden="true">
+                <div style="margin-bottom: 10px;">
+                    <label>Aparência</label>
+                </div>
+                <img id="dinoImage">
+            </div>
             <label>Região:</label>
             <div class="infoField">
                 <p id="regionP"></p>

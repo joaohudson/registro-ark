@@ -7,8 +7,22 @@ const foodP = document.getElementById('foodP');
 const utilityP = document.getElementById('utilityP');
 const trainingP = document.getElementById('trainingP');
 
+//image
+const dinoImage = document.getElementById('dinoImage');
+const dinoImageDiv = document.getElementById('dinoImageDiv');
+
 async function getDino(id){
     const response = await fetch('/api/dino?id=' + id);
+
+    if(!response.ok){
+        throw await response.text();
+    }
+
+    return await response.json();
+}
+
+async function getImageByDino(id){
+    const response = await fetch('/api/dino/image?id=' + id);
 
     if(!response.ok){
         throw await response.text();
@@ -41,7 +55,7 @@ async function main(){
         showError(e);
         return;
     }
-
+    
     h1.innerText = dino.name;
     title.innerText = 'Registro Ark - ' + dino.name;
     regionP.innerText = dino.region.name;
@@ -49,6 +63,12 @@ async function main(){
     foodP.innerText = dino.food.name;
     utilityP.innerText = dino.utility;
     trainingP.innerText = dino.training;
+    
+    try{
+        const image = await getImageByDino(dinoId);
+        dinoImageDiv.hidden = false;
+        dinoImage.src = image.base64;
+    }catch(_){}
 }
 
 main();

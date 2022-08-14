@@ -41,9 +41,10 @@ func main() {
 	regionRepo := db.NewRegionRepository(database)
 	foodRepo := db.NewFoodRepository(database)
 	admRepo := db.NewAdmRepository(database)
+	imageRepo := db.NewImageRepository(database)
 
 	//services
-	dinoService := service.NewDinoService(dinoRepo, locomotionRepo, regionRepo, foodRepo, admRepo)
+	dinoService := service.NewDinoService(dinoRepo, locomotionRepo, regionRepo, foodRepo, admRepo, imageRepo)
 	locomotionService := service.NewLocomotionService(locomotionRepo, dinoRepo)
 	regionService := service.NewRegionService(regionRepo, dinoRepo)
 	foodService := service.NewFoodService(foodRepo, dinoRepo)
@@ -61,6 +62,7 @@ func main() {
 	router.Get("/api/dino", dinoController.FindDinoById)
 	router.Get("/api/dinos", dinoController.FindDinoByFilter)
 	router.Get("/api/dino/categories", categoryController.DinoCategories)
+	router.Get("/api/dino/image", dinoController.GetImage)
 
 	//rotas privadas
 	router.Post("/api/dino", dinoController.CreateDino)

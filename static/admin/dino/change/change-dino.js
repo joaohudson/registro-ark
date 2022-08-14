@@ -6,7 +6,24 @@
     const trainingField = document.getElementById('trainingField');
     const nameField = document.getElementById('nameField');
     const createDinoButton = document.getElementById('createDinoButton');
-    
+    const imageField = document.getElementById('imageField');
+
+    function blobToBase64(blob) {
+        return new Promise((resolve, _) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function getImageData(){
+        if (imageField.files.length == 0) {
+            return '';
+        }
+
+        return await blobToBase64(imageField.files[0]);
+    }
+
     async function fetchCategories(){
         const response = await fetch('/api/dino/categories');
     
@@ -32,13 +49,15 @@
     }
     
     async function changeDino(id){
+        const imageData = await getImageData();
         const dino = {
             name: nameField.value,
             utility: utitlityField.value,
             training: trainingField.value,
             regionId: new Number(regionField.value),
             locomotionId: new Number(locomotionField.value),
-            foodId: new Number(foodField.value)
+            foodId: new Number(foodField.value),
+            image: imageData
         };
     
         try{

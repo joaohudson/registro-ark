@@ -15,6 +15,7 @@ type DinoService struct {
 	regionRepo     *db.RegionRepository
 	foodRepo       *db.FoodRepository
 	admRepo        *db.AdmRepository
+	imageRepo      *db.ImageRepository
 }
 
 func NewDinoService(
@@ -22,7 +23,8 @@ func NewDinoService(
 	locomotionRepo *db.LocomotionRepository,
 	regionRepo *db.RegionRepository,
 	foodRepo *db.FoodRepository,
-	admRepo *db.AdmRepository) *DinoService {
+	admRepo *db.AdmRepository,
+	imageRepo *db.ImageRepository) *DinoService {
 
 	return &DinoService{
 		dinoRepo:       dinoRepo,
@@ -30,6 +32,7 @@ func NewDinoService(
 		regionRepo:     regionRepo,
 		foodRepo:       foodRepo,
 		admRepo:        admRepo,
+		imageRepo:      imageRepo,
 	}
 }
 
@@ -81,6 +84,10 @@ func (s *DinoService) validateRegistryDino(dino models.DinoRegistryRequest) *uti
 		return util.ThrowApiError("Informe um tipo de alimentação válida!", http.StatusBadRequest)
 	}
 
+	if len(dino.ImageBase64) > util.MaxImageSize {
+		return util.ThrowApiError("O tamanho máximo da imagem é de "+util.MaxImageSizeLabel+"!", http.StatusPreconditionFailed)
+	}
+
 	return nil
 }
 
@@ -100,11 +107,18 @@ func (s *DinoService) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) 
 		return util.ThrowApiError("Já existe um dino com esse nome!", http.StatusPreconditionFailed)
 	}
 
-	err = s.dinoRepo.CreateDino(idAdm, dino)
-
+	idDino, err := s.dinoRepo.CreateDino(idAdm, dino)
 	if err != nil {
 		fmt.Println("Erro ao inserir dados no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusBadRequest)
+	}
+
+	if dino.ImageBase64 != "" {
+		err = s.imageRepo.Insert(imageNameByDino(idDino), dino.ImageBase64)
+		if err != nil {
+			fmt.Println("Erro ao salvar imagem do dino: ", err)
+			return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+		}
 	}
 
 	return nil
@@ -126,8 +140,15 @@ func (s *DinoService) PutDino(idDino uint64, idAdm uint64, dino models.DinoRegis
 		return util.ThrowApiError("Dino não encontrado!", http.StatusNotFound)
 	}
 
-	err = s.dinoRepo.PutDino(idDino, idAdm, dino)
+	if dino.ImageBase64 != "" {
+		err = s.imageRepo.Put(imageNameByDino(idDino), dino.ImageBase64)
+		if err != nil {
+			fmt.Println("Erro ao atualizar imagem do dino: ", err)
+			return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+		}
+	}
 
+	err = s.dinoRepo.PutDino(idDino, idAdm, dino)
 	if err != nil {
 		fmt.Println("Erro ao atualizar dados no banco: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusBadRequest)
@@ -155,6 +176,12 @@ func (s *DinoService) DeleteDino(idAdm uint64, id uint64) *util.ApiError {
 
 	if dino.IdAdm != idAdm && idAdm != mainAdmId {
 		return util.ThrowApiError("", http.StatusForbidden)
+	}
+
+	err = s.imageRepo.Delete(imageNameByDino(dino.Id))
+	if err != nil {
+		fmt.Println("Erro ao deletar imagem durante remoção do dino: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 
 	err3 := s.dinoRepo.DeleteDino(id)
@@ -212,4 +239,27 @@ func (s *DinoService) FindDinoByFilterForAdm(idAdm uint64, filter models.DinoFil
 	}
 
 	return dinos, nil
+}
+
+func (s *DinoService) GetImage(dinoId uint64) (models.Image, *util.ApiError) {
+	dino, err := s.dinoRepo.FindDinoById(dinoId)
+	if err != nil {
+		fmt.Println("Erro ao buscar dino por id: ", err)
+		return models.Image{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	base64, err := s.imageRepo.Get(imageNameByDino(dino.Id))
+	if err != nil {
+		fmt.Println("Erro ao buscar imagem por dino: ", err)
+		return models.Image{}, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if base64 == "" {
+		return models.Image{}, util.ThrowApiError("Esse dino não possui imagem!", http.StatusNotFound)
+	}
+
+	return models.Image{Base64: base64}, nil
+}
+
+func imageNameByDino(dinoId uint64) string {
+	return fmt.Sprintf("dino-%d", dinoId)
 }

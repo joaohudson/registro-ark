@@ -2,6 +2,7 @@ package db
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/joaohudson/registro-ark/models"
@@ -15,22 +16,32 @@ func NewDinoRepository(db *sql.DB) *DinoRepository {
 	return &DinoRepository{db: db}
 }
 
-func (r *DinoRepository) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) error {
+func (r *DinoRepository) CreateDino(idAdm uint64, dino models.DinoRegistryRequest) (uint64, error) {
 	now := time.Now()
 
 	const query = `
 	INSERT INTO 
 	dino(name_dino, id_food, id_locomotion, id_region, id_adm, dt_creation, utility_dino, training_dino)
-	VALUES($1, $2, $3, $4, $5, $6, $7, $8);`
+	VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id_dino;`
 
 	rows, err := r.db.Query(query, dino.Name, dino.FoodId, dino.LocomotionId, dino.RegionId, idAdm, now, dino.Utility, dino.Training)
 	if err != nil {
 
-		return err
+		return 0, err
 	}
 	defer rows.Close()
 
-	return nil
+	var idDino uint64
+
+	if !rows.Next() {
+		return 0, errors.New("Erro inesperado ao tentar buscar o id durante insert do dino")
+	}
+	err = rows.Scan(&idDino)
+	if err != nil {
+		return 0, err
+	}
+
+	return idDino, nil
 }
 
 func (r *DinoRepository) PutDino(idDino uint64, idAdm uint64, dino models.DinoRegistryRequest) error {

@@ -192,3 +192,20 @@ func (c *DinoController) DeleteDino(response http.ResponseWriter, request *http.
 		return
 	}
 }
+
+func (c *DinoController) GetImage(response http.ResponseWriter, request *http.Request) {
+	dinoId, err := parseQueryParameterUint64(request, "id")
+	if err != nil {
+		fmt.Println("Erro no parse do id do dino: ", err)
+		sendError(response, util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError))
+		return
+	}
+
+	image, apiErr := c.dinoService.GetImage(dinoId)
+	if apiErr != nil {
+		sendError(response, apiErr)
+		return
+	}
+
+	sendJson(response, image)
+}

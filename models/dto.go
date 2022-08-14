@@ -7,6 +7,7 @@ type DinoRegistryRequest struct {
 	RegionId     uint64 `json:"regionId"`
 	LocomotionId uint64 `json:"locomotionId"`
 	FoodId       uint64 `json:"foodId"`
+	ImageBase64  string `json:"image"`
 }
 
 type CategoryRegistryRequest struct {

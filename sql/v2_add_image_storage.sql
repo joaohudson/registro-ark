@@ -1,0 +1,1 @@
+CREATE TABLE img(name_img VARCHAR(100) UNIQUE, content TEXT);
