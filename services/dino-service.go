@@ -140,6 +140,15 @@ func (s *DinoService) PutDino(idDino uint64, idAdm uint64, dino models.DinoRegis
 		return util.ThrowApiError("Dino não encontrado!", http.StatusNotFound)
 	}
 
+	dinoIdWithName, err := s.dinoRepo.FindDinoIdByName(dino.Name)
+	if err != nil {
+		fmt.Println("Erro ao buscar id de dino por nome: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if dinoIdWithName != 0 && dinoIdWithName != idDino {
+		return util.ThrowApiError("Já existe um dino com esse nome!", http.StatusPreconditionFailed)
+	}
+
 	if dino.ImageBase64 != "" {
 		err = s.imageRepo.Put(imageNameByDino(idDino), dino.ImageBase64)
 		if err != nil {

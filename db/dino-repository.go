@@ -265,3 +265,23 @@ func (r *DinoRepository) ExistsDinoByName(dinoName string) (bool, error) {
 
 	return rows.Next(), nil
 }
+
+func (r *DinoRepository) FindDinoIdByName(name string) (uint64, error) {
+	rows, err := r.db.Query("SELECT id_dino FROM dino WHERE name_dino = $1;", name)
+	if err != nil {
+		return 0, err
+	}
+	defer rows.Close()
+
+	if !rows.Next() {
+		return 0, nil
+	}
+
+	var id uint64
+	err = rows.Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
+}
