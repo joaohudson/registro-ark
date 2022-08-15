@@ -1,6 +1,10 @@
 *{
     outline: none;
 }
+*::selection{
+    background-color: #be823e;
+    color: black;
+}
 html{
     height: 100%;
 }
