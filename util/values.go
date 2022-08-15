@@ -10,5 +10,5 @@ const MaxNameLocomotion = 80
 const MaxNameRegion = 80
 const MaxNameFood = 80
 
-const MaxImageSize = 30000
-const MaxImageSizeLabel = "30kb"
+const MaxImageSize = 200_000
+const MaxImageSizeLabel = "200kb"
