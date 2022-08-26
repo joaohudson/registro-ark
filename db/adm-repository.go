@@ -29,6 +29,26 @@ func (a *AdmRepository) CreateAdm(adm models.AdmRegistryRequest) error {
 	return nil
 }
 
+func (a *AdmRepository) DeleteAdm(id uint64) error {
+	txt, err := a.database.Begin()
+	if err != nil {
+		return err
+	}
+
+	_, err = txt.Exec("DELETE FROM login WHERE id_adm = $1", id)
+	if err != nil {
+		return err
+	}
+	_, err = txt.Exec("DELETE FROM adm WHERE id_adm = $1", id)
+	if err != nil {
+		return err
+	}
+
+	err = txt.Commit()
+
+	return err
+}
+
 func (a *AdmRepository) PutPermissions(permissions models.AdmChangePermissionsRequest) error {
 	const query = `UPDATE adm SET
 	permission_manager_category = $1,

@@ -10,11 +10,12 @@ import (
 )
 
 type AdmService struct {
-	admRepo *db.AdmRepository
+	admRepo  *db.AdmRepository
+	dinoRepo *db.DinoRepository
 }
 
-func NewAdmService(admRepo *db.AdmRepository) *AdmService {
-	return &AdmService{admRepo: admRepo}
+func NewAdmService(admRepo *db.AdmRepository, dinoRepo *db.DinoRepository) *AdmService {
+	return &AdmService{admRepo: admRepo, dinoRepo: dinoRepo}
 }
 
 func (a *AdmService) CreateAdm(adm models.AdmRegistryRequest) *util.ApiError {
@@ -46,6 +47,39 @@ func (a *AdmService) CreateAdm(adm models.AdmRegistryRequest) *util.ApiError {
 	err2 := a.admRepo.CreateAdm(adm)
 	if err2 != nil {
 		fmt.Println("Erro ao criar conta de adminstrador: ", err2)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	return nil
+}
+
+func (a *AdmService) DeleteAdm(idAdm uint64) *util.ApiError {
+
+	adm, err := a.admRepo.GetAdmById(idAdm)
+	if err != nil {
+		fmt.Println("Erro ao buscar adm por id: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+	if adm == nil {
+		return util.ThrowApiError("Esse adm não existe!", http.StatusPreconditionFailed)
+	}
+	if adm.MainAdm {
+		return util.ThrowApiError("O administrador principal não pode ser deletado!", http.StatusPreconditionFailed)
+	}
+
+	dinos, err := a.dinoRepo.FindDinoByFilterForAdm(idAdm, models.DinoFilter{})
+	if err != nil {
+		fmt.Println("Erro ao buscar dinos por adm: ", err)
+		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
+	}
+
+	if len(dinos) > 0 {
+		return util.ThrowApiError("Esse administrador possui dinos, sendo assim, não pode ser removido!", http.StatusPreconditionFailed)
+	}
+
+	err = a.admRepo.DeleteAdm(idAdm)
+	if err != nil {
+		fmt.Println("Erro ao deletar administrador: ", err)
 		return util.ThrowApiError(util.DefaultInternalServerError, http.StatusInternalServerError)
 	}
 

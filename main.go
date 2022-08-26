@@ -48,7 +48,7 @@ func main() {
 	locomotionService := service.NewLocomotionService(locomotionRepo, dinoRepo)
 	regionService := service.NewRegionService(regionRepo, dinoRepo)
 	foodService := service.NewFoodService(foodRepo, dinoRepo)
-	admService := service.NewAdmService(admRepo)
+	admService := service.NewAdmService(admRepo, dinoRepo)
 	loginService := service.NewLoginService(secret, admRepo, loginRepo)
 
 	//controllers
@@ -71,6 +71,7 @@ func main() {
 	router.Get("/api/adm/dinos", dinoController.FindDinoByFilterForAdm)
 	router.Post("/api/adm/logout", loginController.Logout)
 	router.Post("/api/adm", admController.CreateAdm)
+	router.Delete("/api/adm", admController.DeleteAdm)
 	router.Put("/api/adm/permissions", admController.PutAdmPermissions)
 	router.Put("/api/adm/credentials", admController.PutAdmCredentials)
 	router.Get("/api/adm", admController.GetAdm)

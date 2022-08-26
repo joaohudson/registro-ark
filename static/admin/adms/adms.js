@@ -24,6 +24,10 @@ async function postAdm(request){
     return await adminFetch('/api/adm', {method: 'POST', body});
 }
 
+async function deleteAdm(id){
+    return await adminFetch('/api/adm?id='+id, {method: 'DELETE'});
+}
+
 async function main(){
     await loadData();
 }
@@ -86,6 +90,21 @@ async function loadData(){
         div.appendChild(createCheckButtons(adm, channel));
 
         div.appendChild(createButtons(adm, channel));
+
+        div.oncontextmenu = async (e) => {
+            e.preventDefault();
+            const ok = await dialog.showConfirm('Deseja remover ' + adm.name + ' ?');
+            if(ok){
+                try{
+                    await deleteAdm(adm.id);
+                    await loadData();
+                }
+                catch(e){
+                    dialog.showMessage(e);
+                    return;
+                }
+            }
+        }
     }
 }
 

@@ -43,6 +43,26 @@ func (a *AdmController) CreateAdm(response http.ResponseWriter, request *http.Re
 	}
 }
 
+func (a *AdmController) DeleteAdm(response http.ResponseWriter, request *http.Request) {
+	_, apiErr := authenticate(request, a.loginService, PermissionManagerAdm)
+	if apiErr != nil {
+		sendError(response, apiErr)
+		return
+	}
+
+	idAdm, err := parseQueryParameterUint64(request, "id")
+	if err != nil {
+		sendError(response, util.ThrowApiError("Administrador não encontrado!", http.StatusBadRequest))
+		return
+	}
+
+	apiErr = a.admService.DeleteAdm(idAdm)
+	if apiErr != nil {
+		sendError(response, apiErr)
+		return
+	}
+}
+
 func (a *AdmController) PutAdmPermissions(response http.ResponseWriter, request *http.Request) {
 	_, err := authenticate(request, a.loginService, PermissionManagerAdm)
 	if err != nil {
